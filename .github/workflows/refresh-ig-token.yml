@@ -1,0 +1,36 @@
+name: Auto Fetch Instagram Feed
+
+on:
+  schedule:
+    # Berjalan otomatis setiap hari jam 00:00 UTC agar feed selalu up to date
+    - cron: '0 0 * * *'
+  workflow_dispatch: # Mengizinkan Anda menjalankan fetch secara manual lewat tombol di GitHub Actions
+
+jobs:
+  fetch-feed:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Diperlukan agar bot bisa melakukan commit & push feed baru
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+        
+    - name: Run Fetch Instagram Script
+      env:
+        IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+      run: php fetch_instagram.php
+      
+    - name: Commit and Push new Feed
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add instagram_feed.json
+        # Hanya commit jika ada postingan baru/berubah
+        git commit -m "Auto-fetch latest Instagram feed" || echo "No changes to commit"
+        git push
