@@ -1606,6 +1606,11 @@
             border: 1px solid var(--border-line);
             background: var(--bg-surface);
             display: block;
+            cursor: pointer;
+            transition: border-color 0.25s ease, transform 0.25s ease;
+        }
+        .media-card:hover {
+            border-color: var(--accent);
         }
         .media-card img {
             width: 100%;
@@ -1619,18 +1624,43 @@
         .media-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, transparent 60%);
+            background: linear-gradient(to top, rgba(0,0,0,0.86) 0%, rgba(0,0,0,0.22) 55%, transparent 100%);
             opacity: 0;
             transition: opacity 0.25s ease;
             display: flex;
-            align-items: flex-end;
+            flex-direction: column;
             justify-content: space-between;
-            padding: 16px;
+            padding: 14px;
             color: #fff;
             font-family: var(--font-mono);
-            font-size: 0.75rem;
+            font-size: 0.72rem;
         }
         .media-card:hover .media-overlay { opacity: 1; }
+        .media-overlay-top {
+            display: flex;
+            justify-content: flex-end;
+        }
+        .media-preview-pill {
+            background: rgba(10, 12, 16, 0.78);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            color: #fff;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.66rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .media-card:hover .media-preview-pill {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+        .media-overlay-bottom {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
 
         /* ==========================================================================
            13. SECTION 06 // TRANSMISSION & CONTACT CONSOLE
@@ -1925,6 +1955,136 @@
             color: var(--text-muted);
         }
 
+        /* Media Feed Preview Modal (Instagram & Pinterest Review Lightbox) */
+        .media-preview-window {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-strong);
+            border-radius: 20px;
+            max-width: 940px;
+            width: 100%;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: var(--shadow-elevated);
+            display: flex;
+            flex-direction: column;
+            transform: translateY(20px) scale(0.97);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .modal-backdrop.show .media-preview-window {
+            transform: translateY(0) scale(1);
+        }
+        .media-preview-body {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            overflow-y: auto;
+            max-height: calc(90vh - 64px);
+        }
+        .media-preview-stage {
+            position: relative;
+            background: #050608;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 400px;
+            max-height: 76vh;
+            border-right: 1px solid var(--border-line);
+            overflow: hidden;
+        }
+        .media-preview-stage img {
+            width: 100%;
+            height: 100%;
+            max-height: 74vh;
+            object-fit: contain;
+            display: block;
+        }
+        .media-nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 999px;
+            background: rgba(13, 15, 20, 0.82);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            color: #fff;
+            display: grid;
+            place-items: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            z-index: 3;
+        }
+        .media-nav-btn:hover {
+            background: var(--accent);
+            color: var(--accent-contrast);
+            border-color: var(--accent);
+        }
+        .media-nav-prev { left: 14px; }
+        .media-nav-next { right: 14px; }
+        .media-preview-info {
+            padding: 26px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 20px;
+            background: var(--bg-surface);
+        }
+        .media-preview-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding-bottom: 14px;
+            border-bottom: 1px solid var(--border-line);
+        }
+        .media-source-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-family: var(--font-mono);
+            font-size: 0.74rem;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-line);
+            color: var(--accent-text-safe);
+            font-weight: 600;
+        }
+        .media-date-label {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text-muted);
+        }
+        .media-preview-caption-box {
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-line);
+            border-radius: 12px;
+            padding: 16px;
+            max-height: 270px;
+            overflow-y: auto;
+        }
+        .media-preview-caption-title {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+        .media-preview-caption {
+            font-size: 0.92rem;
+            line-height: 1.65;
+            color: var(--text-primary);
+            white-space: pre-line;
+            word-break: break-word;
+        }
+        .media-preview-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border-line);
+        }
+
         /* ==========================================================================
            15. RESPONSIVE BREAKPOINTS
            ========================================================================== */
@@ -1964,6 +2124,15 @@
             .works-grid { grid-template-columns: 1fr; }
             .media-grid { grid-template-columns: repeat(2, 1fr); }
             .case-grid { grid-template-columns: 1fr; }
+            .media-preview-body { grid-template-columns: 1fr; }
+            .media-preview-stage {
+                min-height: 280px;
+                max-height: 46vh;
+                border-right: none;
+                border-bottom: 1px solid var(--border-line);
+            }
+            .media-preview-stage img { max-height: 44vh; }
+            .media-preview-info { padding: 18px; }
             .preloader-telemetry-grid { grid-template-columns: repeat(2, 1fr); }
             .ledger-row {
                 grid-template-columns: 1fr;
@@ -2944,6 +3113,58 @@
     </div>
 
     <!-- ======================================================================
+         MEDIA PREVIEW MODAL (INSTAGRAM & PINTEREST REVIEW LIGHTBOX)
+         ====================================================================== -->
+    <div class="modal-backdrop" id="mediaPreviewModal">
+        <div class="media-preview-window" data-lenis-prevent>
+            <div class="modal-top-bar">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span id="mpTopLabel" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">VISUAL_PREVIEW // 01</span>
+                    <span id="mpCounter" style="font-family: var(--font-mono); font-size: 0.7rem; padding: 3px 8px; border-radius: 6px; background: var(--bg-elevated); border: 1px solid var(--border-line); color: var(--accent-text-safe);">01 / 08</span>
+                </div>
+                <button class="modal-close-btn" onclick="closeMediaPreview()" title="Tutup Preview (ESC)"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="media-preview-body" data-lenis-prevent>
+                <div class="media-preview-stage">
+                    <button class="media-nav-btn media-nav-prev" onclick="stepMediaPreview(-1)" title="Foto Sebelumnya (←)">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <img id="mpImage" src="" alt="Media Preview">
+                    <button class="media-nav-btn media-nav-next" onclick="stepMediaPreview(1)" title="Foto Selanjutnya (→)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="media-preview-info">
+                    <div>
+                        <div class="media-preview-meta">
+                            <span id="mpSourceChip" class="media-source-chip">
+                                <i class="fab fa-instagram"></i>
+                                <span>INSTAGRAM</span>
+                            </span>
+                            <span id="mpDateLabel" class="media-date-label">LATEST ARCHIVE</span>
+                        </div>
+                        <h3 id="mpTitle" style="font-family: var(--font-display); font-size: 1.35rem; margin: 16px 0 12px;">Visual Post Review</h3>
+                        <div class="media-preview-caption-box" data-lenis-prevent>
+                            <div class="media-preview-caption-title">CAPTION &amp; VISUAL NOTES //</div>
+                            <p id="mpCaption" class="media-preview-caption"></p>
+                        </div>
+                    </div>
+                    <div class="media-preview-actions">
+                        <a id="mpExternalLink" href="#" target="_blank" rel="noopener" class="btn-brutal btn-brutal-primary" style="width: 100%; justify-content: center;">
+                            <i class="fas fa-arrow-up-right-from-square"></i>
+                            <span id="mpExternalBtnText">Buka Postingan Asli ↗</span>
+                        </a>
+                        <button type="button" onclick="closeMediaPreview()" class="btn-brutal btn-brutal-ghost" style="width: 100%; justify-content: center;">
+                            <i class="fas fa-arrow-left"></i>
+                            <span>Kembali ke Portofolio</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================================================================
          INTERACTIVE ENGINE SCRIPT
          ====================================================================== -->
     <script>
@@ -3219,13 +3440,88 @@
             });
         });
 
-        // 9. Fetch Instagram & Pinterest Feeds with Fallback Resilience
+        // 9. Fetch Instagram & Pinterest Feeds with Interactive Preview Modal
         const fallbackVisuals = [
             'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80',
             'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?auto=format&fit=crop&w=600&q=80',
             'https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=600&q=80',
             'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=600&q=80'
         ];
+
+        let igItems = [];
+        let pinItems = [];
+        let activeMediaSource = 'ig';
+        let activeMediaIndex = 0;
+
+        function formatMediaDate(dateStr) {
+            if (!dateStr) return 'LATEST ARCHIVE';
+            const d = new Date(dateStr);
+            if (isNaN(d.getTime())) return 'LATEST ARCHIVE';
+            return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase();
+        }
+
+        function openMediaPreview(source, index) {
+            const list = source === 'ig' ? igItems : pinItems;
+            if (!list || !list.length) return;
+            activeMediaSource = source;
+            activeMediaIndex = ((index % list.length) + list.length) % list.length;
+
+            const item = list[activeMediaIndex];
+            const modal = document.getElementById('mediaPreviewModal');
+            const mpImg = document.getElementById('mpImage');
+            const mpTopLabel = document.getElementById('mpTopLabel');
+            const mpCounter = document.getElementById('mpCounter');
+            const mpSourceChip = document.getElementById('mpSourceChip');
+            const mpDateLabel = document.getElementById('mpDateLabel');
+            const mpTitle = document.getElementById('mpTitle');
+            const mpCaption = document.getElementById('mpCaption');
+            const mpExternalLink = document.getElementById('mpExternalLink');
+            const mpExternalBtnText = document.getElementById('mpExternalBtnText');
+
+            const numStr = String(activeMediaIndex + 1).padStart(2, '0');
+            const totalStr = String(list.length).padStart(2, '0');
+
+            mpImg.onerror = () => {
+                mpImg.onerror = null;
+                mpImg.src = item.fallbackImg;
+            };
+            mpImg.src = item.img;
+            mpImg.alt = item.title;
+
+            mpTopLabel.textContent = source === 'ig'
+                ? `INSTAGRAM_ARCHIVE // ITEM_${numStr}`
+                : `PINTEREST_TYPOGRAPHY // PIN_${numStr}`;
+            mpCounter.textContent = `${numStr} / ${totalStr}`;
+
+            if (source === 'ig') {
+                mpSourceChip.innerHTML = `<i class="fab fa-instagram"></i> <span>INSTAGRAM // @azzzzza_m</span>`;
+                mpExternalBtnText.textContent = 'Buka Postingan di Instagram ↗';
+            } else {
+                mpSourceChip.innerHTML = `<i class="fab fa-pinterest-p"></i> <span>PINTEREST // MY TYPOGRAPHY</span>`;
+                mpExternalBtnText.textContent = 'Buka Pin di Pinterest ↗';
+            }
+
+            mpDateLabel.textContent = item.dateLabel || 'LATEST ARCHIVE';
+            mpTitle.textContent = item.title;
+            mpCaption.textContent = item.caption;
+            mpExternalLink.href = item.permalink;
+
+            modal.classList.add('show');
+            syncBodyModalLock();
+        }
+
+        function stepMediaPreview(delta) {
+            const list = activeMediaSource === 'ig' ? igItems : pinItems;
+            if (!list || !list.length) return;
+            openMediaPreview(activeMediaSource, activeMediaIndex + delta);
+        }
+
+        function closeMediaPreview() {
+            const modal = document.getElementById('mediaPreviewModal');
+            if (!modal) return;
+            modal.classList.remove('show');
+            syncBodyModalLock();
+        }
 
         async function loadInstagramFeed() {
             const grid = document.getElementById('insta-grid');
@@ -3234,20 +3530,37 @@
                 if (!res.ok) throw new Error('Feed unavailable');
                 const data = await res.json();
                 if (data.data && data.data.length) {
-                    grid.innerHTML = data.data.slice(0, 8).map((item, i) => {
+                    igItems = data.data.slice(0, 8).map((item, i) => {
                         const img = item.media_type === 'VIDEO' ? (item.thumbnail_url || item.media_url) : item.media_url;
                         const fallbackImg = fallbackVisuals[i % fallbackVisuals.length];
-                        const shortCap = (item.caption || 'Instagram Post').replace(/"/g, '&quot;').slice(0, 80);
-                        return `
-                            <a href="${item.permalink}" target="_blank" rel="noopener" class="media-card" title="${shortCap}">
-                                <img src="${img}" alt="Instagram Post ${i + 1}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackImg}';">
-                                <div class="media-overlay">
+                        const rawCaption = (item.caption || '').trim();
+                        const firstLine = rawCaption.split('\n')[0] || `Instagram Chronicle #0${i + 1}`;
+                        const title = firstLine.length > 52 ? firstLine.slice(0, 52) + '...' : firstLine;
+                        const typeBadge = item.media_type === 'VIDEO' ? 'REEL / VIDEO' : (item.media_type === 'CAROUSEL_ALBUM' ? 'CAROUSEL ALBUM' : 'PHOTOGRAPH');
+                        return {
+                            img,
+                            fallbackImg,
+                            permalink: item.permalink,
+                            title,
+                            caption: rawCaption || 'Dokumentasi visual oleh Muhammad Azzam (@azzzzza_m).',
+                            dateLabel: item.timestamp ? formatMediaDate(item.timestamp) : typeBadge
+                        };
+                    });
+
+                    grid.innerHTML = igItems.map((item, i) => `
+                        <div class="media-card" role="button" tabindex="0" onclick="openMediaPreview('ig', ${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openMediaPreview('ig', ${i});}">
+                            <img src="${item.img}" alt="Instagram Post ${i + 1}" loading="lazy" onerror="this.onerror=null;this.src='${item.fallbackImg}';">
+                            <div class="media-overlay">
+                                <div class="media-overlay-top">
+                                    <span class="media-preview-pill"><i class="fas fa-expand"></i> Review Foto</span>
+                                </div>
+                                <div class="media-overlay-bottom">
                                     <span>IG // 0${i + 1}</span>
                                     <i class="fab fa-instagram"></i>
                                 </div>
-                            </a>
-                        `;
-                    }).join('');
+                            </div>
+                        </div>
+                    `).join('');
                 } else {
                     throw new Error('Empty feed');
                 }
@@ -3266,33 +3579,75 @@
             const rssUrl = 'https://www.pinterest.com/Zernevaa/my-typography.rss';
             const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
             try {
-                const res = await fetch(apiUrl);
-                if (!res.ok) throw new Error('Pinterest RSS error');
-                const data = await res.json();
-                if (data.status === 'ok' && data.items && data.items.length) {
-                    const cards = data.items.slice(0, 8).map((item, i) => {
-                        const content = item.content || item.description || '';
-                        const match = content.match(/src=["']([^"']+)["']/);
-                        const src = match ? match[1].replace('236x', '564x') : '';
-                        if (!src) return '';
-                        const fallbackImg = fallbackVisuals[i % fallbackVisuals.length];
-                        return `
-                            <a href="${item.link}" target="_blank" rel="noopener" class="media-card">
-                                <img src="${src}" alt="Pinterest Pin ${i + 1}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackImg}';">
-                                <div class="media-overlay">
-                                    <span>TYPE // 0${i + 1}</span>
+                let parsedPins = [];
+
+                // 1. Primary: Load pre-sorted newest pins from pinterest_feed.json
+                try {
+                    const localRes = await fetch('pinterest_feed.json?t=' + Date.now());
+                    if (localRes.ok) {
+                        const localData = await localRes.json();
+                        if (localData.items && localData.items.length) {
+                            parsedPins = localData.items.map((item, i) => ({
+                                img: item.image_url,
+                                fallbackImg: fallbackVisuals[i % fallbackVisuals.length],
+                                permalink: item.permalink,
+                                title: item.title && item.title !== 'Typography Visual Exploration'
+                                    ? item.title
+                                    : `Typography Exploration #0${i + 1}`,
+                                caption: item.caption || 'Koleksi eksplorasi tipografi, tata letak, dan komposisi cerita visual oleh Muhammad Azzam (Zerneva) pada board My Typography.',
+                                dateLabel: formatMediaDate(item.pubDate),
+                                timestamp: item.timestamp || (item.pubDate ? new Date(item.pubDate).getTime() : 0)
+                            }));
+                        }
+                    }
+                } catch (localErr) {
+                    // Fallback to live RSS below if local JSON is missing
+                }
+
+                // 2. Fallback: Live RSS via rss2json sorted by newest pubDate first
+                if (!parsedPins.length) {
+                    const res = await fetch(apiUrl);
+                    if (!res.ok) throw new Error('Pinterest RSS error');
+                    const data = await res.json();
+                    if (data.status === 'ok' && data.items && data.items.length) {
+                        const sortedRss = [...data.items].sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
+                        parsedPins = sortedRss.map((item, i) => {
+                            const content = item.content || item.description || '';
+                            const match = content.match(/src=["']([^"']+)["']/);
+                            const src = match ? match[1].replace('236x', '736x') : '';
+                            if (!src) return null;
+                            const cleanDesc = content.replace(/<[^>]*>/g, '').trim();
+                            return {
+                                img: src,
+                                fallbackImg: fallbackVisuals[i % fallbackVisuals.length],
+                                permalink: item.link,
+                                title: item.title ? item.title.trim() : `Typography Exploration #0${i + 1}`,
+                                caption: cleanDesc || 'Koleksi eksplorasi tipografi, tata letak, dan komposisi cerita visual oleh Muhammad Azzam (Zerneva) pada board My Typography.',
+                                dateLabel: formatMediaDate(item.pubDate),
+                                timestamp: item.pubDate ? new Date(item.pubDate).getTime() : 0
+                            };
+                        }).filter(Boolean);
+                    }
+                }
+
+                if (parsedPins.length) {
+                    pinItems = parsedPins.slice(0, 8);
+                    grid.innerHTML = pinItems.map((item, i) => `
+                        <div class="media-card" role="button" tabindex="0" onclick="openMediaPreview('pin', ${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openMediaPreview('pin', ${i});}">
+                            <img src="${item.img}" alt="Pinterest Pin ${i + 1}" loading="lazy" onerror="this.onerror=null;this.src='${item.fallbackImg}';">
+                            <div class="media-overlay">
+                                <div class="media-overlay-top">
+                                    <span class="media-preview-pill"><i class="fas fa-expand"></i> Review Pin</span>
+                                </div>
+                                <div class="media-overlay-bottom">
+                                    <span>TYPE // 0${i + 1} • ${item.dateLabel}</span>
                                     <i class="fab fa-pinterest-p"></i>
                                 </div>
-                            </a>
-                        `;
-                    }).filter(Boolean).join('');
-                    if (cards) {
-                        grid.innerHTML = cards;
-                    } else {
-                        throw new Error('No pin images parsed');
-                    }
+                            </div>
+                        </div>
+                    `).join('');
                 } else {
-                    throw new Error('Empty Pinterest response');
+                    throw new Error('No pin images available');
                 }
             } catch (e) {
                 grid.innerHTML = `
@@ -3381,6 +3736,16 @@
             if (e.key === 'Escape') {
                 document.querySelectorAll('.modal-backdrop.show').forEach(m => m.classList.remove('show'));
                 syncBodyModalLock();
+            }
+            const mpModal = document.getElementById('mediaPreviewModal');
+            if (mpModal && mpModal.classList.contains('show')) {
+                if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    stepMediaPreview(-1);
+                } else if (e.key === 'ArrowRight') {
+                    e.preventDefault();
+                    stepMediaPreview(1);
+                }
             }
         });
 

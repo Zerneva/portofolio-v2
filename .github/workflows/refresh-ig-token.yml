@@ -30,7 +30,7 @@ jobs:
       run: |
         git config --global user.name "github-actions[bot]"
         git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-        git add instagram_feed.json
+        git add instagram_feed.json pinterest_feed.json
         # Hanya commit jika ada postingan baru/berubah
-        git commit -m "Auto-fetch latest Instagram feed" || echo "No changes to commit"
+        git commit -m "Auto-fetch latest Instagram & Pinterest feeds" || echo "No changes to commit"
         git push
