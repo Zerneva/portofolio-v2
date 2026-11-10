@@ -2683,7 +2683,7 @@
                                 <i class="fab fa-instagram"></i> Instagram (@azzzzza_m)
                             </button>
                             <button class="archive-tab" data-target="pin-panel">
-                                <i class="fab fa-pinterest"></i> Pinterest (@Zernevaa)
+                                <i class="fab fa-pinterest"></i> Typography Board (@Zernevaa)
                             </button>
                         </div>
                     </div>
@@ -2705,8 +2705,8 @@
                 <!-- Pinterest Panel -->
                 <div id="pin-panel" class="media-feed-panel">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px;">
-                        <span style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);">STREAM SOURCE: PINTEREST MOODBOARD</span>
-                        <a href="https://id.pinterest.com/Zernevaa/" target="_blank" class="filter-pill">View @Zernevaa ↗</a>
+                        <span style="font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted);">STREAM SOURCE: PINTEREST BOARD // MY TYPOGRAPHY</span>
+                        <a href="https://www.pinterest.com/Zernevaa/my-typography/" target="_blank" class="filter-pill">View Board ↗</a>
                     </div>
                     <div class="media-grid" id="pint-grid">
                         <div style="grid-column: 1 / -1; padding: 48px; text-align: center; color: var(--text-muted); font-family: var(--font-mono);">
@@ -3263,7 +3263,7 @@
 
         async function loadPinterestFeed() {
             const grid = document.getElementById('pint-grid');
-            const rssUrl = 'https://www.pinterest.com/Zernevaa/feed.rss';
+            const rssUrl = 'https://www.pinterest.com/Zernevaa/my-typography.rss';
             const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
             try {
                 const res = await fetch(apiUrl);
@@ -3280,7 +3280,7 @@
                             <a href="${item.link}" target="_blank" rel="noopener" class="media-card">
                                 <img src="${src}" alt="Pinterest Pin ${i + 1}" loading="lazy" onerror="this.onerror=null;this.src='${fallbackImg}';">
                                 <div class="media-overlay">
-                                    <span>PIN // 0${i + 1}</span>
+                                    <span>TYPE // 0${i + 1}</span>
                                     <i class="fab fa-pinterest-p"></i>
                                 </div>
                             </a>
@@ -3297,7 +3297,7 @@
             } catch (e) {
                 grid.innerHTML = `
                     <div style="grid-column: 1 / -1; padding: 36px; border: 1px dashed var(--border-line); border-radius: 12px; text-align: center; color: var(--text-secondary);">
-                        <p>Lihat koleksi inspirasi visual di Pinterest <strong>@Zernevaa</strong>.</p>
+                        <p>Lihat koleksi inspirasi tipografi di Pinterest <strong>@Zernevaa/my-typography</strong>.</p>
                     </div>
                 `;
             }
