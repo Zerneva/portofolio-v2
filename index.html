@@ -3418,9 +3418,10 @@
         }
         applyTheme(savedTheme);
 
-        // Organic ink shape: a seeded multi-octave noise profile plus a few splatter tendrils.
-        // The profile is computed once per toggle, then baked into clip-path keyframes so the
-        // browser interpolates the shape itself (no per-frame SVG filter rasterization).
+        // Organic ink shape: a seeded multi-octave noise profile plus organic liquid lobes.
+        // Precomputed into 25 dense keyframes with custom ease-out-quart velocity so the
+        // browser interpolates the polygon smoothly at 60-120fps without stage kinks or
+        // shape-mismatch flashes.
         function seededRandom(seed) {
             let s = seed >>> 0;
             return () => {
@@ -3435,24 +3436,25 @@
         function createInkProfile(seed) {
             const rand = seededRandom(seed * 9973 + 17);
             const octaves = [
-                { freq: 3, amp: 1.0 },
-                { freq: 5, amp: 0.62 },
-                { freq: 9, amp: 0.34 },
-                { freq: 17, amp: 0.16 },
-                { freq: 29, amp: 0.08 }
-            ].map(o => ({ ...o, phase: rand() * Math.PI * 2, drift: (rand() - 0.5) * 1.6 }));
+                { freq: 3,  amp: 1.00 },
+                { freq: 5,  amp: 0.72 },
+                { freq: 9,  amp: 0.48 },
+                { freq: 15, amp: 0.30 },
+                { freq: 23, amp: 0.16 },
+                { freq: 35, amp: 0.08 }
+            ].map(o => ({ ...o, phase: rand() * Math.PI * 2, drift: (rand() - 0.5) * 2.4 }));
             const ampSum = octaves.reduce((sum, o) => sum + o.amp, 0);
-            const tendrilCount = 5 + Math.floor(rand() * 3);
+            const tendrilCount = 7 + Math.floor(rand() * 4);
             const tendrils = Array.from({ length: tendrilCount }, () => ({
                 angle: rand() * Math.PI * 2,
-                width: 0.05 + rand() * 0.09,
-                length: 0.25 + rand() * 0.45
+                width: 0.06 + rand() * 0.09,
+                length: 0.28 + rand() * 0.42
             }));
             return { octaves, ampSum, tendrils };
         }
 
         function inkPolygon(profile, cx, cy, radius, roughness, tendrilScale, t) {
-            const points = 180;
+            const points = 240;
             const coords = new Array(points);
             for (let i = 0; i < points; i++) {
                 const theta = (i / points) * Math.PI * 2;
@@ -3469,7 +3471,7 @@
                     tendril += td.length * Math.exp(-(d * d) / (td.width * td.width));
                 }
 
-                const r = Math.max(0, radius * (1 + roughness * noise + tendrilScale * tendril));
+                const r = Math.max(0.2, radius * (1 + roughness * noise + tendrilScale * tendril));
                 coords[i] = `${(cx + Math.cos(theta) * r).toFixed(1)}px ${(cy + Math.sin(theta) * r).toFixed(1)}px`;
             }
             return `polygon(${coords.join(',')})`;
@@ -3477,21 +3479,32 @@
 
         function buildInkKeyframes(cx, cy, maxRadius, seed) {
             const profile = createInkProfile(seed);
-            // Final frame must fully cover the viewport: the smallest point of the polygon
-            // is radius * (1 - roughness), so scale the end radius up accordingly.
-            const endRoughness = 0.08;
-            const endRadius = (maxRadius * 1.04) / (1 - endRoughness);
-            const stages = [
-                { offset: 0,    radius: 0,                roughness: 0,    tendrils: 0,    t: 0 },
-                { offset: 0.16, radius: endRadius * 0.08, roughness: 0.42, tendrils: 0.6,  t: 0 },
-                { offset: 0.42, radius: endRadius * 0.36, roughness: 0.32, tendrils: 0.48, t: 0.9 },
-                { offset: 0.72, radius: endRadius * 0.72, roughness: 0.2,  tendrils: 0.26, t: 1.7 },
-                { offset: 1,    radius: endRadius,        roughness: endRoughness, tendrils: 0, t: 2.4 }
-            ];
-            return stages.map(s => ({
-                offset: s.offset,
-                clipPath: inkPolygon(profile, cx, cy, s.radius, s.roughness, s.tendrils, s.t)
-            }));
+            const endRoughness = 0.06;
+            const endRadius = (maxRadius * 1.06) / (1 - endRoughness);
+            const steps = 28; // 29 dense keyframes (~3.5% step) for butter-smooth C1 motion
+            const keyframes = [];
+
+            for (let k = 0; k <= steps; k++) {
+                const p = k / steps;
+                // Balanced cubic-in-out + ease-out blend: graceful bloom at start, fluid sweep across screen, gentle settle
+                const inOut = p < 0.5
+                    ? 4 * p * p * p
+                    : 1 - Math.pow(-2 * p + 2, 3) / 2;
+                const outCubic = 1 - Math.pow(1 - p, 2.6);
+                const eased = inOut * 0.45 + outCubic * 0.55;
+                const radius = Math.max(0.2, eased * endRadius);
+                // Organic edge turbulence stays prominent throughout the sweep across the screen
+                const envelope = Math.sin(Math.pow(p, 0.75) * Math.PI);
+                const roughness = endRoughness + 0.40 * envelope;
+                const tendrils = 0.58 * envelope * (1 - p * 0.25);
+                const t = eased * 2.5;
+
+                keyframes.push({
+                    offset: Number(p.toFixed(4)),
+                    clipPath: inkPolygon(profile, cx, cy, radius, roughness, tendrils, t)
+                });
+            }
+            return keyframes;
         }
 
         // Canvas fallback for browsers that do not support document.startViewTransition
@@ -3512,28 +3525,33 @@
             ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
             const fillColor = nextTheme === 'light' ? '#F5F3EE' : '#08090C';
             const profile = createInkProfile(inkSeedCounter);
-            const endRadius = (maxRadius * 1.04) / 0.92;
-            const duration = 1000;
+            const endRoughness = 0.06;
+            const endRadius = (maxRadius * 1.06) / (1 - endRoughness);
+            const duration = 980;
             const start = performance.now();
             let themeSwapped = false;
 
-            function drawOrganicBlob(progress) {
-                // Same easing as the View Transition path for a consistent feel
-                const eased = progress < 0.5
-                    ? 4 * progress * progress * progress
-                    : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-                const radius = eased * endRadius;
-                const roughness = 0.42 - 0.34 * eased;
-                const tendrils = 0.6 * (1 - eased);
+            function drawOrganicBlob(p) {
+                const inOut = p < 0.5
+                    ? 4 * p * p * p
+                    : 1 - Math.pow(-2 * p + 2, 3) / 2;
+                const outCubic = 1 - Math.pow(1 - p, 2.6);
+                const eased = inOut * 0.45 + outCubic * 0.55;
+                const radius = Math.max(0.2, eased * endRadius);
+                const envelope = Math.sin(Math.pow(p, 0.75) * Math.PI);
+                const roughness = endRoughness + 0.40 * envelope;
+                const tendrils = 0.58 * envelope * (1 - p * 0.25);
+                const t = eased * 2.5;
+
                 ctx.clearRect(0, 0, vw, vh);
                 ctx.fillStyle = fillColor;
                 ctx.beginPath();
-                const points = 180;
+                const points = 240;
                 for (let i = 0; i < points; i++) {
                     const theta = (i / points) * Math.PI * 2;
                     let noise = 0;
                     for (const o of profile.octaves) {
-                        noise += o.amp * Math.sin(o.freq * theta + o.phase + o.drift * eased * 2.4);
+                        noise += o.amp * Math.sin(o.freq * theta + o.phase + o.drift * t);
                     }
                     noise /= profile.ampSum;
                     let tendril = 0;
@@ -3542,7 +3560,7 @@
                         if (d > Math.PI) d = Math.PI * 2 - d;
                         tendril += td.length * Math.exp(-(d * d) / (td.width * td.width));
                     }
-                    const r = Math.max(0, radius * (1 + roughness * noise + tendrils * tendril));
+                    const r = Math.max(0.2, radius * (1 + roughness * noise + tendrils * tendril));
                     const px = originX + Math.cos(theta) * r;
                     const py = originY + Math.sin(theta) * r;
                     if (i === 0) ctx.moveTo(px, py);
@@ -3617,10 +3635,10 @@
                 return;
             }
 
-            // Precompute the whole ink animation before the snapshot is taken
+            // Precompute 25 smooth ink keyframes before the snapshot is taken
             const keyframes = buildInkKeyframes(originX, originY, maxRadius, inkSeedCounter);
-            // Hide the new snapshot until the animation starts (prevents a one-frame flash)
-            htmlEl.style.setProperty('--ink-clip-start', `circle(0px at ${originX.toFixed(1)}px ${originY.toFixed(1)}px)`);
+            // Match exact polygon geometry on the initial frame so CSS clip-path and WAAPI never clash
+            htmlEl.style.setProperty('--ink-clip-start', keyframes[0].clipPath);
             htmlEl.classList.add('is-theme-transitioning');
 
             let transition;
@@ -3637,9 +3655,11 @@
             }
 
             transition.ready.then(() => {
+                // Keyframes already carry the continuous fluid velocity curve,
+                // so 'linear' interpolation between the 29 dense stages eliminates mid-stage kinks.
                 htmlEl.animate(keyframes, {
-                    duration: 1050,
-                    easing: 'cubic-bezier(0.55, 0, 0.25, 1)',
+                    duration: 980,
+                    easing: 'linear',
                     fill: 'both',
                     pseudoElement: '::view-transition-new(root)'
                 });
