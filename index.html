@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <!-- V3.0 — EDITORIAL NEO-BRUTALIST & HIGH-CRAFT TECH EDITION -->
-    <title>Muhammad Azzam Al-Fauzie — Software Engineer & Digital Specialist</title>
-    <meta name="description" content="Portfolio of Muhammad Azzam Al-Fauzie (Zerneva) — Informatics Graduate, Software Engineer & Digital Marketing Specialist crafting high-impact digital systems.">
+    <!-- V3.0 : EDITORIAL NEO-BRUTALIST & HIGH-CRAFT TECH EDITION -->
+    <title>Muhammad Azzam Al-Fauzie : Software Engineer & Digital Specialist</title>
+    <meta name="description" content="Portfolio of Muhammad Azzam Al-Fauzie (Zerneva), Informatics Graduate, Software Engineer & Digital Marketing Specialist crafting high-impact digital systems.">
     <meta name="keywords" content="Muhammad Azzam, Zerneva, Portfolio, Digital Specialist, Software Engineer, Flutter Developer, Digital Marketing, Data Analytics, Sumbawa, Lampung Barat">
     <meta name="author" content="Muhammad Azzam Al-Fauzie">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="Muhammad Azzam Al-Fauzie — Digital Specialist & Software Engineer">
+    <meta property="og:title" content="Muhammad Azzam Al-Fauzie : Digital Specialist & Software Engineer">
     <meta property="og:description" content="Blending the precision of software engineering with the strategic craft of digital marketing and data analytics.">
     <meta property="og:image" content="image/me1.png">
     <meta property="og:url" content="https://azzam-portfolio.com">
@@ -26,7 +26,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <!-- Smooth Scroll (Lenis) -->
-    <script src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/gh/studio-freight/lenis@1.0.19/bundled/lenis.min.js"></script>
 
     <style>
         /* ==========================================================================
@@ -53,7 +53,7 @@
         [data-accent="vermilion"] {
             --accent: #FF4D1C;
             --accent-rgb: 255, 77, 28;
-            --accent-contrast: #FFFFFF;
+            --accent-contrast: #090A0D;
         }
         [data-accent="emerald"] {
             --accent: #00F5A0;
@@ -63,7 +63,7 @@
         [data-accent="electric"] {
             --accent: #6366F1;
             --accent-rgb: 99, 102, 241;
-            --accent-contrast: #FFFFFF;
+            --accent-contrast: #090A0D;
         }
 
         /* Dark Mode (Default High-Craft Tech) */
@@ -75,11 +75,12 @@
             --bg-glass: rgba(14, 16, 22, 0.78);
             --text-primary: #F3F4F6;
             --text-secondary: #9CA3AF;
-            --text-muted: #5E6573;
-            --border-line: rgba(255, 255, 255, 0.08);
-            --border-strong: rgba(255, 255, 255, 0.18);
+            --text-muted: #8E96A8;
+            --border-line: rgba(255, 255, 255, 0.12);
+            --border-strong: rgba(255, 255, 255, 0.24);
             --shadow-elevated: 0 24px 60px rgba(0, 0, 0, 0.65);
             --grid-dot: rgba(255, 255, 255, 0.05);
+            --accent-text-safe: var(--accent);
         }
 
         /* Light Mode (Swiss Archival Editorial Paper) */
@@ -91,21 +92,86 @@
             --bg-glass: rgba(245, 243, 238, 0.85);
             --text-primary: #0B0C10;
             --text-secondary: #4B505E;
-            --text-muted: #7E8494;
-            --border-line: rgba(11, 12, 16, 0.11);
-            --border-strong: rgba(11, 12, 16, 0.28);
+            --text-muted: #596070;
+            --border-line: rgba(11, 12, 16, 0.14);
+            --border-strong: rgba(11, 12, 16, 0.32);
             --shadow-elevated: 0 20px 50px rgba(11, 12, 16, 0.08);
             --grid-dot: rgba(11, 12, 16, 0.06);
         }
-        /* Ensure high legibility for lime accent in light mode on text/badges */
+        /* Ensure WCAG AA legibility (>= 4.5:1) for accent text/badges in light mode */
         [data-theme="light"][data-accent="lime"] {
-            --accent-text-safe: #0B0C10;
+            --accent-text-safe: #3D5A00;
         }
-        [data-theme="dark"] {
-            --accent-text-safe: var(--accent);
+        [data-theme="light"][data-accent="vermilion"] {
+            --accent-text-safe: #B82A00;
         }
-        [data-theme="light"]:not([data-accent="lime"]) {
-            --accent-text-safe: var(--accent);
+        [data-theme="light"][data-accent="emerald"] {
+            --accent-text-safe: #006944;
+        }
+        [data-theme="light"][data-accent="electric"] {
+            --accent-text-safe: #3E3CD6;
+        }
+
+        /* ==========================================================================
+           1B. ORGANIC LIQUID INK THEME TRANSITION (DARK <-> LIGHT MODE)
+           ========================================================================== */
+        ::view-transition-old(root),
+        ::view-transition-new(root) {
+            animation: none;
+            mix-blend-mode: normal;
+            display: block;
+        }
+        ::view-transition-old(root) {
+            z-index: 1;
+        }
+        ::view-transition-new(root) {
+            z-index: 9999;
+            /* SVG data-URI mask updated dynamically per frame for organic ink-bleed edge */
+            -webkit-mask-image: var(--ink-mask-url);
+            mask-image: var(--ink-mask-url);
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-size: 100% 100%;
+            mask-size: 100% 100%;
+        }
+
+        /* Disable CSS color transitions while View Transition snapshot is capturing */
+        html.is-theme-transitioning,
+        html.is-theme-transitioning *,
+        html.is-theme-transitioning *::before,
+        html.is-theme-transitioning *::after {
+            transition: none !important;
+        }
+
+        /* Fallback Organic Ink Canvas for browsers without View Transitions API */
+        #ink-transition-canvas {
+            position: fixed;
+            inset: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 19999;
+            opacity: 0;
+            display: none;
+        }
+
+        /* Accessible Keyboard Focus Ring (R-32, R-39) */
+        a:focus-visible,
+        button:focus-visible,
+        input:focus-visible,
+        textarea:focus-visible,
+        [role="button"]:focus-visible {
+            outline: 2px solid var(--accent-text-safe);
+            outline-offset: 3px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
         }
 
         /* ==========================================================================
@@ -144,6 +210,8 @@
 
         a { color: inherit; text-decoration: none; }
         button { font-family: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+        a[href], button, summary, select, label[for], [role="button"], [role="tab"], [role="switch"] { cursor: pointer; }
+        button:disabled, [aria-disabled="true"] { cursor: not-allowed; opacity: 0.6; }
         img { max-width: 100%; display: block; }
 
         /* Top Scroll Progress Line */
@@ -529,8 +597,8 @@
         .accent-dot[data-color="electric"] { background: #6366F1; }
 
         .cmd-btn, .icon-btn {
-            height: 38px;
-            padding: 0 12px;
+            min-height: 44px;
+            padding: 0 14px;
             border-radius: 8px;
             background: var(--bg-elevated);
             border: 1px solid var(--border-line);
@@ -542,11 +610,14 @@
             color: var(--text-secondary);
             transition: all 0.2s ease;
         }
-        .icon-btn { width: 38px; padding: 0; justify-content: center; font-size: 0.95rem; }
+        .icon-btn { min-width: 44px; width: 44px; padding: 0; justify-content: center; font-size: 1rem; }
         .cmd-btn:hover, .icon-btn:hover {
             border-color: var(--accent);
             color: var(--text-primary);
             transform: translateY(-1px);
+        }
+        .cmd-btn:active, .icon-btn:active, .btn-brutal:active {
+            transform: translateY(1px) scale(0.98);
         }
         .cmd-kbd {
             background: var(--bg-canvas);
@@ -672,7 +743,7 @@
         }
 
         /* ==========================================================================
-           6. HERO SECTION — EDITORIAL NEO-BRUTALIST SPLIT
+           6. HERO SECTION : EDITORIAL NEO-BRUTALIST SPLIT
            ========================================================================== */
         .hero-section {
             padding: clamp(36px, 5vw, 64px) 0 clamp(56px, 7vw, 88px);
@@ -828,7 +899,7 @@
             color: var(--text-muted);
         }
 
-        /* Hero Right — Architectural Portrait Frame */
+        /* Hero Right : Architectural Portrait Frame */
         .hero-portrait-stage {
             position: relative;
         }
@@ -960,6 +1031,8 @@
             padding: 16px 0;
             overflow: hidden;
             display: flex;
+            align-items: center;
+            position: relative;
             user-select: none;
         }
         .marquee-track {
@@ -973,6 +1046,28 @@
             font-size: 0.95rem;
             letter-spacing: 0.06em;
             text-transform: uppercase;
+        }
+        .marquee-strip.paused .marquee-track {
+            animation-play-state: paused;
+        }
+        .marquee-pause-btn {
+            position: absolute;
+            right: 16px;
+            z-index: 2;
+            min-height: 36px;
+            padding: 4px 12px;
+            border-radius: 6px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border-strong);
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--text-primary);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .marquee-pause-btn:hover {
+            border-color: var(--accent);
         }
         .marquee-item {
             display: inline-flex;
@@ -1852,8 +1947,8 @@
             z-index: 2;
         }
         .modal-close-btn {
-            width: 36px;
-            height: 36px;
+            width: 44px;
+            height: 44px;
             border-radius: 8px;
             background: var(--bg-elevated);
             border: 1px solid var(--border-line);
@@ -2001,8 +2096,8 @@
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: 999px;
             background: rgba(13, 15, 20, 0.82);
             border: 1px solid rgba(255, 255, 255, 0.18);
@@ -2171,6 +2266,7 @@
     <div id="scroll-progress"></div>
     <div class="bg-architectural-grid"></div>
     <div class="ambient-glow"></div>
+    <canvas id="ink-transition-canvas" aria-hidden="true"></canvas>
 
     <!-- ======================================================================
          TELEMETRY PRELOADER (INTERACTIVE BOOT SCREEN)
@@ -2187,7 +2283,7 @@
             </div>
             <div class="preloader-title">
                 MUHAMMAD AZZAM<br>
-                <em>Al-Fauzie</em> — ZERNEVA
+                <em>Al-Fauzie</em> // ZERNEVA
             </div>
 
             <div class="preloader-telemetry-grid" id="preloaderSteps">
@@ -2266,8 +2362,8 @@
                 </button>
 
                 <!-- Dark / Light Mode Toggle -->
-                <button class="icon-btn" id="themeToggleBtn" title="Switch Dark / Light Theme">
-                    <i class="fas fa-sun"></i>
+                <button class="icon-btn" id="themeToggleBtn" aria-label="Switch Dark / Light Theme" title="Switch Dark / Light Theme">
+                    <i class="fas fa-sun" aria-hidden="true"></i>
                 </button>
             </div>
         </div>
@@ -2368,7 +2464,7 @@
 
                             <div class="portrait-img-box">
                                 <div class="portrait-bg-monogram">AZ</div>
-                                <img src="image/me1.png" alt="Muhammad Azzam Al-Fauzie" id="heroPortraitImg">
+                                <img src="image/me1.png" alt="Muhammad Azzam Al-Fauzie" id="heroPortraitImg" width="440" height="440" fetchpriority="high">
                             </div>
 
                             <div class="portrait-card-footer">
@@ -2386,7 +2482,7 @@
         <!-- ==================================================================
              KINETIC MARQUEE STRIP
              ================================================================== -->
-        <div class="marquee-strip">
+        <div class="marquee-strip" id="marqueeStrip">
             <div class="marquee-track">
                 <div class="marquee-item">
                     <span>SOFTWARE ENGINEERING</span> <span class="marquee-star">✦</span>
@@ -2405,6 +2501,9 @@
                     <span>UMKM GO-DIGITAL INCUBATION</span> <span class="marquee-star">✦</span>
                 </div>
             </div>
+            <button type="button" class="marquee-pause-btn" id="marqueePauseBtn" aria-label="Pause ticker animation" onclick="const s=document.getElementById('marqueeStrip');const p=s.classList.toggle('paused');this.setAttribute('aria-label',p?'Play ticker animation':'Pause ticker animation');this.querySelector('span').textContent=p?'PLAY':'PAUSE';">
+                <i class="fas fa-pause" aria-hidden="true"></i> <span>PAUSE</span>
+            </button>
         </div>
 
         <!-- ==================================================================
@@ -2429,7 +2528,7 @@
                     <div class="dossier-cell cell-bio">
                         <div class="cell-tag">
                             <span class="idx">[01.A] PROFILE MANIFESTO</span>
-                            <span>S1 INFORMATIKA — UTS</span>
+                            <span>S1 INFORMATIKA // UTS</span>
                         </div>
                         <p class="bio-lead">
                             Merancang sistem teknologi yang <em>relevan</em>, analitis, dan berdampak nyata bagi ekosistem bisnis maupun publik.
@@ -2486,11 +2585,11 @@
                     <div class="dossier-cell cell-exp">
                         <div class="cell-tag">
                             <span class="idx">[01.C] PROFESSIONAL EXPERIENCE LEDGER</span>
-                            <span>2022 — PRESENT</span>
+                            <span>2022 - PRESENT</span>
                         </div>
                         <div class="ledger-list">
                             <div class="ledger-row">
-                                <div class="ledger-date">Jan 2025 — Present</div>
+                                <div class="ledger-date">Jan 2025 - Present</div>
                                 <div class="ledger-role">
                                     <h4>Konsultan Bidang Pemasaran</h4>
                                     <p>UPTD PLUT Lampung Barat</p>
@@ -2498,7 +2597,7 @@
                                 <span class="ledger-badge">ACTIVE ROLE</span>
                             </div>
                             <div class="ledger-row">
-                                <div class="ledger-date">Jul 2023 — Sep 2023</div>
+                                <div class="ledger-date">Jul 2023 - Sep 2023</div>
                                 <div class="ledger-role">
                                     <h4>Data Entry Specialist</h4>
                                     <p>Badan Pusat Statistik (BPS)</p>
@@ -2506,7 +2605,7 @@
                                 <span class="ledger-badge">STATISTICS</span>
                             </div>
                             <div class="ledger-row">
-                                <div class="ledger-date">Mar 2022 — Apr 2022</div>
+                                <div class="ledger-date">Mar 2022 - Apr 2022</div>
                                 <div class="ledger-role">
                                     <h4>Staff IT &amp; Hubungan Masyarakat</h4>
                                     <p>BPK Perwakilan Provinsi NTB</p>
@@ -2554,7 +2653,7 @@
                     <div class="dossier-cell cell-lead-1">
                         <div class="cell-tag">
                             <span class="idx">[01.E] EXECUTIVE LEADERSHIP</span>
-                            <span>JAN 2022 — DEC 2022</span>
+                            <span>JAN 2022 - DEC 2022</span>
                         </div>
                         <div class="leadership-head">
                             <h3>DPM FRS Universitas Teknologi Sumbawa</h3>
@@ -2572,7 +2671,7 @@
                     <div class="dossier-cell cell-lead-2">
                         <div class="cell-tag">
                             <span class="idx">[01.F] ORGANIZATION PRESIDENCY</span>
-                            <span>JAN 2022 — DEC 2022</span>
+                            <span>JAN 2022 - DEC 2022</span>
                         </div>
                         <div class="leadership-head">
                             <h3>Hokusei Universitas Teknologi Sumbawa</h3>
@@ -2613,13 +2712,13 @@
 
                 <div class="works-grid">
                     <!-- Work 01 -->
-                    <article class="work-card" data-category="Mobile" onclick="openCaseModal('modal1')">
+                    <article class="work-card" data-category="Mobile" role="button" tabindex="0" onclick="openCaseModal('modal1')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCaseModal('modal1');}">
                         <div class="work-card-top">
                             <span>CASE STUDY // 01</span>
                             <span>WEB &amp; CLOUD PLATFORM</span>
                         </div>
                         <div class="work-thumb">
-                            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80" alt="PLUT KUMKM Hub">
+                            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=800&q=80" alt="PLUT KUMKM Hub" width="800" height="480" loading="lazy">
                             <div class="work-tags">
                                 <span class="work-tag">Live Production</span>
                                 <span class="work-tag">Pusat Layanan UMKM</span>
@@ -2639,13 +2738,13 @@
                     </article>
 
                     <!-- Work 02 -->
-                    <article class="work-card" data-category="Aplikasi" onclick="openCaseModal('modal2')">
+                    <article class="work-card" data-category="Aplikasi" role="button" tabindex="0" onclick="openCaseModal('modal2')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCaseModal('modal2');}">
                         <div class="work-card-top">
                             <span>CASE STUDY // 02</span>
                             <span>FLUTTER • FINTECH</span>
                         </div>
                         <div class="work-thumb">
-                            <img src="image/zenflow-banner.jpg" alt="Zenflow Finance Minimalist App">
+                            <img src="image/zenflow-banner.jpg" alt="Zenflow Finance Minimalist App" width="800" height="480" loading="lazy">
                             <div class="work-tags">
                                 <span class="work-tag">Flutter</span>
                                 <span class="work-tag">Finance</span>
@@ -2665,13 +2764,13 @@
                     </article>
 
                     <!-- Work 03 -->
-                    <article class="work-card" data-category="Branding" onclick="openCaseModal('modal3')">
+                    <article class="work-card" data-category="Branding" role="button" tabindex="0" onclick="openCaseModal('modal3')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCaseModal('modal3');}">
                         <div class="work-card-top">
                             <span>CASE STUDY // 03</span>
                             <span>UX CATALOG • BRANDING</span>
                         </div>
                         <div class="work-thumb">
-                            <img src="https://images.unsplash.com/photo-1542744094-24638eff58bb?auto=format&fit=crop&w=800&q=80" alt="Galeri Digital UMKM">
+                            <img src="https://images.unsplash.com/photo-1542744094-24638eff58bb?auto=format&fit=crop&w=800&q=80" alt="Galeri Digital UMKM" width="800" height="480" loading="lazy">
                             <div class="work-tags">
                                 <span class="work-tag">Visual</span>
                                 <span class="work-tag">Product Catalog</span>
@@ -2709,7 +2808,7 @@
                             <div class="zenflow-pill">
                                 <i class="fas fa-star"></i> FEATURED RELEASE // ANDROID APK
                             </div>
-                            <h3>Zenflow — Effortless MSME Cashflow OS.</h3>
+                            <h3>Zenflow: Practical MSME Cashflow OS.</h3>
                             <p>
                                 Dirancang khusus untuk menjawab tantangan pelaku UMKM dalam mencatat arus kas harian tanpa kerumitan akuntansi. Dilengkapi sinkronisasi cloud, mode offline-ready, dan analitik visual otomatis.
                             </p>
@@ -2734,7 +2833,7 @@
 
                         <div class="zenflow-device-stage">
                             <div class="phone-chassis">
-                                <img src="image/zenflow-app.jpg" alt="Zenflow App Interface">
+                                <img src="image/zenflow-app.jpg" alt="Zenflow App Interface" width="270" height="540" loading="lazy">
                             </div>
                         </div>
                     </div>
@@ -2761,11 +2860,11 @@
 
                 <div class="capabilities-table">
                     <div class="cap-item open">
-                        <div class="cap-row" onclick="toggleCapability(this)">
+                        <div class="cap-row" role="button" tabindex="0" onclick="toggleCapability(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCapability(this);}">
                             <span class="cap-num">[01]</span>
                             <h3 class="cap-title">Software Engineering</h3>
                             <p class="cap-desc">Merancang &amp; mengembangkan aplikasi mobile (Flutter), web modern, dan arsitektur database yang skalabel serta efisien.</p>
-                            <div class="cap-icon-box"><i class="fas fa-laptop-code"></i></div>
+                            <div class="cap-icon-box"><i class="fas fa-laptop-code" aria-hidden="true"></i></div>
                         </div>
                         <div class="cap-drawer">
                             <div class="cap-drawer-tags">
@@ -2779,11 +2878,11 @@
                     </div>
 
                     <div class="cap-item">
-                        <div class="cap-row" onclick="toggleCapability(this)">
+                        <div class="cap-row" role="button" tabindex="0" onclick="toggleCapability(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCapability(this);}">
                             <span class="cap-num">[02]</span>
                             <h3 class="cap-title">Digital Marketing</h3>
                             <p class="cap-desc">Perencanaan kampanye terukur, optimasi SEO, analisis metrik media sosial, dan pendampingan strategis UMKM Go-Digital.</p>
-                            <div class="cap-icon-box"><i class="fas fa-bullseye"></i></div>
+                            <div class="cap-icon-box"><i class="fas fa-bullseye" aria-hidden="true"></i></div>
                         </div>
                         <div class="cap-drawer">
                             <div class="cap-drawer-tags">
@@ -2797,11 +2896,11 @@
                     </div>
 
                     <div class="cap-item">
-                        <div class="cap-row" onclick="toggleCapability(this)">
+                        <div class="cap-row" role="button" tabindex="0" onclick="toggleCapability(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCapability(this);}">
                             <span class="cap-num">[03]</span>
                             <h3 class="cap-title">Data Analytics</h3>
                             <p class="cap-desc">Pengumpulan, pembersihan, dan visualisasi data statistik hingga ekstraksi insight strategis untuk pengambilan keputusan.</p>
-                            <div class="cap-icon-box"><i class="fas fa-chart-pie"></i></div>
+                            <div class="cap-icon-box"><i class="fas fa-chart-pie" aria-hidden="true"></i></div>
                         </div>
                         <div class="cap-drawer">
                             <div class="cap-drawer-tags">
@@ -2814,11 +2913,11 @@
                     </div>
 
                     <div class="cap-item">
-                        <div class="cap-row" onclick="toggleCapability(this)">
+                        <div class="cap-row" role="button" tabindex="0" onclick="toggleCapability(this)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleCapability(this);}">
                             <span class="cap-num">[04]</span>
                             <h3 class="cap-title">Creative Content &amp; UI/UX</h3>
                             <p class="cap-desc">Produksi video profesional, desain identitas visual, prototyping antarmuka pengguna (Figma), dan komunikasi publik.</p>
-                            <div class="cap-icon-box"><i class="fas fa-palette"></i></div>
+                            <div class="cap-icon-box"><i class="fas fa-palette" aria-hidden="true"></i></div>
                         </div>
                         <div class="cap-drawer">
                             <div class="cap-drawer-tags">
@@ -2945,11 +3044,11 @@
                         <form id="contactForm" action="https://formspree.io/f/maqaqvga" method="POST">
                             <div class="form-group">
                                 <label for="f-name">01 // YOUR NAME</label>
-                                <input type="text" id="f-name" name="name" class="form-control" placeholder="e.g. Budi Santoso" required>
+                                <input type="text" id="f-name" name="name" class="form-control" placeholder="Your Name" required>
                             </div>
                             <div class="form-group">
                                 <label for="f-email">02 // EMAIL ADDRESS</label>
-                                <input type="email" id="f-email" name="email" class="form-control" placeholder="name@company.com" required>
+                                <input type="email" id="f-email" name="email" class="form-control" placeholder="email@example.com" required>
                             </div>
                             <div class="form-group">
                                 <label for="f-msg">03 // PROJECT BRIEF OR MESSAGE</label>
@@ -2973,10 +3072,10 @@
     <div class="modal-backdrop" id="modal1">
         <div class="modal-window" data-lenis-prevent>
             <div class="modal-top-bar">
-                <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">CASE_STUDY // 01 — PLUT KUMKM</span>
-                <button class="modal-close-btn" onclick="closeCaseModal('modal1')"><i class="fas fa-times"></i></button>
+                <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">CASE_STUDY // 01 : PLUT KUMKM</span>
+                <button class="modal-close-btn" aria-label="Close Case Study 01" onclick="closeCaseModal('modal1')"><i class="fas fa-times" aria-hidden="true"></i></button>
             </div>
-            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80" alt="PLUT KUMKM App" class="modal-hero-img">
+            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80" alt="PLUT KUMKM App" width="1200" height="360" loading="lazy" class="modal-hero-img">
             <div class="modal-content-pad">
                 <h2>PLUT KUMKM Lampung Barat Hub</h2>
                 <p style="color: var(--text-secondary);">Pusat Layanan Usaha Terpadu Koperasi dan Usaha Mikro, Kecil, dan Menengah (PLUT-KUMKM) terintegrasi Kabupaten Lampung Barat untuk sentralisasi database pelaku usaha, konsultasi bisnis, dan pelaporan real-time instansi.</p>
@@ -3007,12 +3106,12 @@
     <div class="modal-backdrop" id="modal2">
         <div class="modal-window" data-lenis-prevent>
             <div class="modal-top-bar">
-                <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">CASE_STUDY // 02 — ZENFLOW OS</span>
-                <button class="modal-close-btn" onclick="closeCaseModal('modal2')"><i class="fas fa-times"></i></button>
+                <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">CASE_STUDY // 02 : ZENFLOW OS</span>
+                <button class="modal-close-btn" aria-label="Close Case Study 02" onclick="closeCaseModal('modal2')"><i class="fas fa-times" aria-hidden="true"></i></button>
             </div>
-            <img src="image/zenflow-banner.jpg" alt="Zenflow Finance Banner" class="modal-hero-img">
+            <img src="image/zenflow-banner.jpg" alt="Zenflow Finance Banner" width="1200" height="360" loading="lazy" class="modal-hero-img">
             <div class="modal-content-pad">
-                <h2>Zenflow — Smart Finance Tracker</h2>
+                <h2>Zenflow: Smart Finance Tracker</h2>
                 <p style="color: var(--text-secondary);">Aplikasi pencatatan pemasukan dan pengeluaran modern berbasis Flutter untuk kemandirian finansial UMKM dan individu.</p>
                 <div class="case-grid">
                     <div class="case-box">
@@ -3040,10 +3139,10 @@
     <div class="modal-backdrop" id="modal3">
         <div class="modal-window" data-lenis-prevent>
             <div class="modal-top-bar">
-                <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">CASE_STUDY // 03 — GALERI UMKM</span>
-                <button class="modal-close-btn" onclick="closeCaseModal('modal3')"><i class="fas fa-times"></i></button>
+                <span style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">CASE_STUDY // 03 : GALERI UMKM</span>
+                <button class="modal-close-btn" aria-label="Close Case Study 03" onclick="closeCaseModal('modal3')"><i class="fas fa-times" aria-hidden="true"></i></button>
             </div>
-            <img src="https://images.unsplash.com/photo-1542744094-24638eff58bb?auto=format&fit=crop&w=1200&q=80" alt="Galeri Digital UMKM" class="modal-hero-img">
+            <img src="https://images.unsplash.com/photo-1542744094-24638eff58bb?auto=format&fit=crop&w=1200&q=80" alt="Galeri Digital UMKM" width="1200" height="360" loading="lazy" class="modal-hero-img">
             <div class="modal-content-pad">
                 <h2>Galeri Digital UMKM</h2>
                 <p style="color: var(--text-secondary);">Katalog visual interaktif untuk meningkatkan daya saing dan nilai jual produk lokal di pasar digital.</p>
@@ -3071,8 +3170,8 @@
     <div class="modal-backdrop" id="cmdModal">
         <div class="cmd-window" data-lenis-prevent>
             <div class="cmd-input-wrap">
-                <i class="fas fa-search" style="color: var(--accent-text-safe);"></i>
-                <input type="text" id="cmdSearchInput" placeholder="Type a command or jump to section...">
+                <label for="cmdSearchInput" aria-label="Search commands" style="display:inline-flex;align-items:center;"><i class="fas fa-search" aria-hidden="true" style="color: var(--accent-text-safe);"></i></label>
+                <input type="text" id="cmdSearchInput" aria-label="Type a command or jump to section" placeholder="Type a command or jump to section...">
                 <button class="copy-pill" onclick="closeCmdModal()">ESC</button>
             </div>
             <div class="cmd-list" id="cmdList" data-lenis-prevent>
@@ -3092,7 +3191,7 @@
                     <span><i class="fas fa-file-pdf" style="width:22px;"></i> Download Curriculum Vitae (CV)</span>
                     <span class="cmd-hint">EXTERNAL PDF</span>
                 </button>
-                <button class="cmd-item" onclick="toggleThemeGlobal(); closeCmdModal();">
+                <button class="cmd-item" onclick="closeCmdModal(); toggleThemeGlobal(event);">
                     <span><i class="fas fa-adjust" style="width:22px;"></i> Toggle Dark / Light Mode</span>
                     <span class="cmd-hint">THEME</span>
                 </button>
@@ -3122,16 +3221,16 @@
                     <span id="mpTopLabel" style="font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-muted);">VISUAL_PREVIEW // 01</span>
                     <span id="mpCounter" style="font-family: var(--font-mono); font-size: 0.7rem; padding: 3px 8px; border-radius: 6px; background: var(--bg-elevated); border: 1px solid var(--border-line); color: var(--accent-text-safe);">01 / 08</span>
                 </div>
-                <button class="modal-close-btn" onclick="closeMediaPreview()" title="Tutup Preview (ESC)"><i class="fas fa-times"></i></button>
+                <button class="modal-close-btn" aria-label="Tutup Preview" onclick="closeMediaPreview()" title="Tutup Preview (ESC)"><i class="fas fa-times" aria-hidden="true"></i></button>
             </div>
             <div class="media-preview-body" data-lenis-prevent>
                 <div class="media-preview-stage">
-                    <button class="media-nav-btn media-nav-prev" onclick="stepMediaPreview(-1)" title="Foto Sebelumnya (←)">
-                        <i class="fas fa-chevron-left"></i>
+                    <button class="media-nav-btn media-nav-prev" aria-label="Foto Sebelumnya" onclick="stepMediaPreview(-1)" title="Foto Sebelumnya (←)">
+                        <i class="fas fa-chevron-left" aria-hidden="true"></i>
                     </button>
-                    <img id="mpImage" src="" alt="Media Preview">
-                    <button class="media-nav-btn media-nav-next" onclick="stepMediaPreview(1)" title="Foto Selanjutnya (→)">
-                        <i class="fas fa-chevron-right"></i>
+                    <img id="mpImage" src="" alt="Media Preview" width="800" height="800">
+                    <button class="media-nav-btn media-nav-next" aria-label="Foto Selanjutnya" onclick="stepMediaPreview(1)" title="Foto Selanjutnya (→)">
+                        <i class="fas fa-chevron-right" aria-hidden="true"></i>
                     </button>
                 </div>
                 <div class="media-preview-info">
@@ -3302,29 +3401,221 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // 4. Theme & Accent Engine
+        // 4. Theme & Accent Engine (Organic Liquid Ink Spread Transition: Dark <-> Light)
         const htmlEl = document.documentElement;
         const themeBtn = document.getElementById('themeToggleBtn');
+        const inkCanvas = document.getElementById('ink-transition-canvas');
         const savedTheme = localStorage.getItem('az_v3_theme') || 'dark';
         const savedAccent = localStorage.getItem('az_v3_accent') || 'lime';
+        let isThemeAnimating = false;
+        let inkSeedCounter = 11;
 
         function applyTheme(theme) {
             htmlEl.setAttribute('data-theme', theme);
             localStorage.setItem('az_v3_theme', theme);
-            const icon = themeBtn.querySelector('i');
-            icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+            if (themeBtn) {
+                const icon = themeBtn.querySelector('i');
+                if (icon) icon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+                themeBtn.setAttribute('aria-label', theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode');
+            }
         }
         applyTheme(savedTheme);
 
-        function toggleThemeGlobal() {
-            const next = htmlEl.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-            if (document.startViewTransition) {
-                document.startViewTransition(() => applyTheme(next));
-            } else {
-                applyTheme(next);
-            }
+        // Builds a fractal displacement SVG mask data-URI for the organic liquid ink edge
+        function buildOrganicInkMask(cx, cy, radius, vw, vh, seed, displacementScale) {
+            const safeR = Math.max(0.5, radius).toFixed(1);
+            const scale = Math.max(0, displacementScale).toFixed(1);
+            // Secondary tendrils around the main ink body for realistic liquid splatter
+            const t1x = (cx + radius * 0.22).toFixed(1);
+            const t1y = (cy + radius * 0.14).toFixed(1);
+            const t2x = (cx - radius * 0.18).toFixed(1);
+            const t2y = (cy + radius * 0.25).toFixed(1);
+            const subR = Math.max(0.5, radius * 0.86).toFixed(1);
+
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${vw} ${vh}" width="${vw}" height="${vh}">` +
+                `<defs>` +
+                `<filter id="ink" x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB">` +
+                `<feTurbulence type="fractalNoise" baseFrequency="0.011 0.015" numOctaves="4" seed="${seed}" result="noise"/>` +
+                `<feDisplacementMap in="SourceGraphic" in2="noise" scale="${scale}" xChannelSelector="R" yChannelSelector="G"/>` +
+                `</filter>` +
+                `</defs>` +
+                `<g filter="url(#ink)" fill="#ffffff">` +
+                `<circle cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${safeR}"/>` +
+                `<circle cx="${t1x}" cy="${t1y}" r="${subR}"/>` +
+                `<circle cx="${t2x}" cy="${t2y}" r="${subR}"/>` +
+                `</g>` +
+                `</svg>`;
+            return `url("data:image/svg+xml;utf8,${encodeURIComponent(svg)}")`;
         }
-        themeBtn.addEventListener('click', toggleThemeGlobal);
+
+        // Canvas fallback for browsers that do not support document.startViewTransition
+        function runCanvasInkFallback(nextTheme, originX, originY, maxRadius) {
+            if (!inkCanvas) {
+                applyTheme(nextTheme);
+                isThemeAnimating = false;
+                return;
+            }
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            inkCanvas.width = vw;
+            inkCanvas.height = vh;
+            inkCanvas.style.display = 'block';
+            inkCanvas.style.opacity = '1';
+            const ctx = inkCanvas.getContext('2d');
+            const fillColor = nextTheme === 'light' ? '#F5F3EE' : '#08090C';
+            const duration = 820;
+            const start = performance.now();
+            let themeSwapped = false;
+
+            function drawOrganicBlob(progress) {
+                ctx.clearRect(0, 0, vw, vh);
+                const eased = 1 - Math.pow(1 - progress, 3);
+                const baseR = eased * (maxRadius * 1.25);
+                const lobes = 42;
+                ctx.fillStyle = fillColor;
+                ctx.beginPath();
+                for (let i = 0; i <= lobes; i++) {
+                    const angle = (i / lobes) * Math.PI * 2;
+                    const wave = Math.sin(angle * 5 + inkSeedCounter) * 0.14 +
+                                 Math.cos(angle * 9 - inkSeedCounter * 0.7) * 0.09 +
+                                 Math.sin(angle * 15 + progress * 5) * 0.06;
+                    const wobble = Math.sin(progress * Math.PI) * baseR * wave;
+                    const r = Math.max(0, baseR + wobble);
+                    const px = originX + Math.cos(angle) * r;
+                    const py = originY + Math.sin(angle) * r;
+                    if (i === 0) ctx.moveTo(px, py);
+                    else ctx.lineTo(px, py);
+                }
+                ctx.closePath();
+                ctx.fill();
+            }
+
+            function step(now) {
+                const p = Math.min(1, (now - start) / duration);
+                drawOrganicBlob(p);
+                if (p >= 0.55 && !themeSwapped) {
+                    themeSwapped = true;
+                    htmlEl.classList.add('is-theme-transitioning');
+                    applyTheme(nextTheme);
+                }
+                if (p < 1) {
+                    requestAnimationFrame(step);
+                } else {
+                    inkCanvas.style.transition = 'opacity 0.24s ease';
+                    inkCanvas.style.opacity = '0';
+                    setTimeout(() => {
+                        inkCanvas.style.display = 'none';
+                        inkCanvas.style.transition = '';
+                        htmlEl.classList.remove('is-theme-transitioning');
+                        isThemeAnimating = false;
+                    }, 250);
+                }
+            }
+            requestAnimationFrame(step);
+        }
+
+        function toggleThemeGlobal(evt) {
+            if (isThemeAnimating) return;
+            const currentTheme = htmlEl.getAttribute('data-theme') || 'dark';
+            const next = currentTheme === 'dark' ? 'light' : 'dark';
+
+            // Respect reduced-motion preference (R-39)
+            const prefersReducedMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (prefersReducedMotion) {
+                applyTheme(next);
+                return;
+            }
+
+            // Determine origin coordinates (from click event, or theme button center)
+            let originX = window.innerWidth / 2;
+            let originY = window.innerHeight / 2;
+            if (evt && typeof evt.clientX === 'number' && (evt.clientX !== 0 || evt.clientY !== 0)) {
+                originX = evt.clientX;
+                originY = evt.clientY;
+            } else if (themeBtn) {
+                const rect = themeBtn.getBoundingClientRect();
+                if (rect.width > 0 && rect.height > 0) {
+                    originX = rect.left + rect.width / 2;
+                    originY = rect.top + rect.height / 2;
+                }
+            }
+
+            const vw = window.innerWidth;
+            const vh = window.innerHeight;
+            const maxRadius = Math.hypot(
+                Math.max(originX, vw - originX),
+                Math.max(originY, vh - originY)
+            );
+
+            isThemeAnimating = true;
+            inkSeedCounter = (inkSeedCounter + 17) % 997;
+
+            if (!document.startViewTransition) {
+                runCanvasInkFallback(next, originX, originY, maxRadius);
+                return;
+            }
+
+            // Prime initial 0-radius ink mask before starting View Transition
+            const initialMask = buildOrganicInkMask(originX, originY, 0.5, vw, vh, inkSeedCounter, 60);
+            htmlEl.style.setProperty('--ink-mask-url', initialMask);
+            htmlEl.classList.add('is-theme-transitioning');
+
+            let transition;
+            try {
+                transition = document.startViewTransition(() => {
+                    applyTheme(next);
+                });
+            } catch (err) {
+                applyTheme(next);
+                htmlEl.classList.remove('is-theme-transitioning');
+                isThemeAnimating = false;
+                return;
+            }
+
+            transition.ready.then(() => {
+                const duration = 920;
+                const startTime = performance.now();
+                // Extra radius margin so displaced fractal tendrils fully cover every corner at 100%
+                const targetRadius = maxRadius + 240;
+
+                function animateInkFrame(now) {
+                    const elapsed = now - startTime;
+                    const rawProgress = Math.min(1, elapsed / duration);
+                    // Cubic ease-in-out for fluid liquid momentum
+                    const eased = rawProgress < 0.5
+                        ? 4 * rawProgress * rawProgress * rawProgress
+                        : 1 - Math.pow(-2 * rawProgress + 2, 3) / 2;
+
+                    const currentRadius = eased * targetRadius;
+                    // Peak fractal turbulence in the middle of the spread, settling cleanly at the edges
+                    const dispIntensity = Math.sin(rawProgress * Math.PI) * 240 + (1 - rawProgress) * 110;
+                    const maskDataUrl = buildOrganicInkMask(
+                        originX,
+                        originY,
+                        currentRadius,
+                        vw,
+                        vh,
+                        inkSeedCounter,
+                        dispIntensity
+                    );
+                    htmlEl.style.setProperty('--ink-mask-url', maskDataUrl);
+
+                    if (rawProgress < 1) {
+                        requestAnimationFrame(animateInkFrame);
+                    }
+                }
+                requestAnimationFrame(animateInkFrame);
+            }).catch(() => {
+                isThemeAnimating = false;
+            });
+
+            transition.finished.finally(() => {
+                htmlEl.classList.remove('is-theme-transitioning');
+                htmlEl.style.removeProperty('--ink-mask-url');
+                isThemeAnimating = false;
+            });
+        }
+        themeBtn.addEventListener('click', (e) => toggleThemeGlobal(e));
 
         // Accent Switcher
         const accentDots = document.querySelectorAll('.accent-dot');
@@ -3549,7 +3840,7 @@
 
                     grid.innerHTML = igItems.map((item, i) => `
                         <div class="media-card" role="button" tabindex="0" onclick="openMediaPreview('ig', ${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openMediaPreview('ig', ${i});}">
-                            <img src="${item.img}" alt="Instagram Post ${i + 1}" loading="lazy" onerror="this.onerror=null;this.src='${item.fallbackImg}';">
+                            <img src="${item.img}" alt="Instagram Post ${i + 1}" width="400" height="400" loading="lazy" onerror="this.onerror=null;this.src='${item.fallbackImg}';">
                             <div class="media-overlay">
                                 <div class="media-overlay-top">
                                     <span class="media-preview-pill"><i class="fas fa-expand"></i> Review Foto</span>
@@ -3562,13 +3853,17 @@
                         </div>
                     `).join('');
                 } else {
-                    throw new Error('Empty feed');
+                    grid.innerHTML = `
+                        <div style="grid-column: 1 / -1; padding: 36px; border: 1px dashed var(--border-line); border-radius: 12px; text-align: center; color: var(--text-secondary);">
+                            <p>Belum ada postingan di arsip lokal. Kunjungi profil Instagram <strong>@azzzzza_m</strong> untuk melihat karya terbaru.</p>
+                        </div>
+                    `;
                 }
             } catch (e) {
                 grid.innerHTML = `
                     <div style="grid-column: 1 / -1; padding: 36px; border: 1px dashed var(--border-line); border-radius: 12px; text-align: center; color: var(--text-secondary);">
                         <i class="fab fa-instagram" style="font-size: 2rem; color: var(--accent-text-safe); margin-bottom: 10px;"></i>
-                        <p>Kunjungi langsung profil Instagram <strong>@azzzzza_m</strong> untuk melihat karya visual terbaru.</p>
+                        <p>Gagal memuat stream lokal. Kunjungi langsung profil Instagram <strong>@azzzzza_m</strong> untuk melihat karya visual terbaru.</p>
                     </div>
                 `;
             }
@@ -3634,7 +3929,7 @@
                     pinItems = parsedPins.slice(0, 8);
                     grid.innerHTML = pinItems.map((item, i) => `
                         <div class="media-card" role="button" tabindex="0" onclick="openMediaPreview('pin', ${i})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openMediaPreview('pin', ${i});}">
-                            <img src="${item.img}" alt="Pinterest Pin ${i + 1}" loading="lazy" onerror="this.onerror=null;this.src='${item.fallbackImg}';">
+                            <img src="${item.img}" alt="Pinterest Pin ${i + 1}" width="400" height="400" loading="lazy" onerror="this.onerror=null;this.src='${item.fallbackImg}';">
                             <div class="media-overlay">
                                 <div class="media-overlay-top">
                                     <span class="media-preview-pill"><i class="fas fa-expand"></i> Review Pin</span>
@@ -3647,12 +3942,16 @@
                         </div>
                     `).join('');
                 } else {
-                    throw new Error('No pin images available');
+                    grid.innerHTML = `
+                        <div style="grid-column: 1 / -1; padding: 36px; border: 1px dashed var(--border-line); border-radius: 12px; text-align: center; color: var(--text-secondary);">
+                            <p>Belum ada pin di arsip lokal. Buka board Pinterest <strong>@Zernevaa/my-typography</strong> untuk melihat kurasi terbaru.</p>
+                        </div>
+                    `;
                 }
             } catch (e) {
                 grid.innerHTML = `
                     <div style="grid-column: 1 / -1; padding: 36px; border: 1px dashed var(--border-line); border-radius: 12px; text-align: center; color: var(--text-secondary);">
-                        <p>Lihat koleksi inspirasi tipografi di Pinterest <strong>@Zernevaa/my-typography</strong>.</p>
+                        <p>Gagal memuat feed Pinterest. Lihat koleksi inspirasi tipografi langsung di <strong>@Zernevaa/my-typography</strong>.</p>
                     </div>
                 `;
             }
