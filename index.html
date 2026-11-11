@@ -647,7 +647,33 @@
             background: #11141B;
             border-color: rgba(255, 255, 255, 0.2);
         }
+
+        /* Fluid Gliding Active Indicator Pill */
+        .dock-indicator {
+            position: absolute;
+            top: 6px;
+            bottom: 6px;
+            left: 0;
+            width: 0;
+            border-radius: 999px;
+            background: var(--accent);
+            box-shadow: 0 4px 18px rgba(var(--accent-rgb), 0.36);
+            pointer-events: none;
+            z-index: 1;
+            transition: transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+                        width 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+                        background-color 0.25s ease,
+                        opacity 0.2s ease;
+            will-change: transform, width;
+            opacity: 0;
+        }
+        .dock-indicator.ready {
+            opacity: 1;
+        }
+
         .dock-link {
+            position: relative;
+            z-index: 2;
             padding: 9px 16px;
             border-radius: 999px;
             font-family: var(--font-mono);
@@ -657,15 +683,33 @@
             display: inline-flex;
             align-items: center;
             gap: 7px;
-            transition: all 0.25s ease;
+            transition: color 0.25s ease, background-color 0.2s ease;
             white-space: nowrap;
+            background: transparent;
         }
-        .dock-link i { font-size: 0.8rem; }
-        .dock-link:hover { color: #FFFFFF; background: rgba(255,255,255,0.06); }
+        .dock-link i {
+            font-size: 0.8rem;
+            transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .dock-link:hover {
+            color: #FFFFFF;
+        }
+        .dock-link:hover:not(.active) {
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .dock-link:hover i {
+            transform: scale(1.18);
+        }
         .dock-link.active {
-            background: var(--accent);
             color: var(--accent-contrast);
             font-weight: 700;
+        }
+        .dock-link.active i {
+            transform: scale(1.08);
+        }
+        /* Fallback if indicator is not initialized */
+        .floating-dock:not(:has(.dock-indicator.ready)) .dock-link.active {
+            background: var(--accent);
         }
 
         /* ==========================================================================
@@ -2370,7 +2414,8 @@
     <!-- ======================================================================
          FLOATING GLASS NAVIGATION DOCK
          ====================================================================== -->
-    <nav class="floating-dock" aria-label="Primary Navigation">
+    <nav class="floating-dock" id="floatingDock" aria-label="Primary Navigation">
+        <div class="dock-indicator" id="dockIndicator" aria-hidden="true"></div>
         <a href="#hero" class="dock-link active"><i class="fas fa-compass"></i> <span>Index</span></a>
         <a href="#dossier" class="dock-link"><i class="fas fa-fingerprint"></i> <span>Dossier</span></a>
         <a href="#works" class="dock-link"><i class="fas fa-layer-group"></i> <span>Works</span></a>
@@ -4264,11 +4309,59 @@
             });
         }
 
-        // 12. Scroll Progress & Active Dock Spy (Throttled via requestAnimationFrame)
+        // 12. Scroll Progress & Active Dock Indicator Animation (Throttled via requestAnimationFrame)
         const progressEl = document.getElementById('scroll-progress');
         const sections = document.querySelectorAll('main section[id], footer[id]');
+        const floatingDock = document.getElementById('floatingDock');
+        const dockIndicator = document.getElementById('dockIndicator');
         const dockLinks = document.querySelectorAll('.dock-link');
         let isScrollTicking = false;
+        let lastActiveDockLink = null;
+
+        function moveDockIndicator(targetLink, immediate = false) {
+            if (!dockIndicator || !targetLink || !floatingDock) return;
+            lastActiveDockLink = targetLink;
+            const linkLeft = targetLink.offsetLeft;
+            const linkWidth = targetLink.offsetWidth;
+
+            if (immediate) {
+                dockIndicator.style.transition = 'none';
+            }
+            dockIndicator.style.transform = `translateX(${linkLeft}px)`;
+            dockIndicator.style.width = `${linkWidth}px`;
+            dockIndicator.classList.add('ready');
+
+            if (immediate) {
+                requestAnimationFrame(() => {
+                    // Small delay to re-engage smooth transition
+                    requestAnimationFrame(() => {
+                        dockIndicator.style.transition = '';
+                    });
+                });
+            }
+        }
+
+        // Click handler: instantly glide indicator to clicked link
+        dockLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                dockLinks.forEach(l => l.classList.toggle('active', l === link));
+                moveDockIndicator(link);
+            });
+        });
+
+        // Initialize indicator position
+        function initDockIndicator() {
+            const active = document.querySelector('.dock-link.active') || dockLinks[0];
+            if (active) moveDockIndicator(active, true);
+        }
+        if (document.fonts && document.fonts.ready) {
+            document.fonts.ready.then(initDockIndicator);
+        } else {
+            setTimeout(initDockIndicator, 150);
+        }
+        window.addEventListener('resize', () => {
+            if (lastActiveDockLink) moveDockIndicator(lastActiveDockLink, true);
+        }, { passive: true });
 
         function updateScrollSpy() {
             const scrollTop = window.scrollY;
@@ -4285,9 +4378,18 @@
             if (docHeight > 0 && scrollTop >= docHeight - 40) {
                 current = 'contact';
             }
+
+            let newActiveLink = null;
             dockLinks.forEach(link => {
-                link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+                const isActive = link.getAttribute('href') === '#' + current;
+                link.classList.toggle('active', isActive);
+                if (isActive) newActiveLink = link;
             });
+
+            if (newActiveLink && newActiveLink !== lastActiveDockLink) {
+                moveDockIndicator(newActiveLink);
+            }
+
             isScrollTicking = false;
         }
 
