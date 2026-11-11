@@ -132,15 +132,15 @@
         ::view-transition-new(root) {
             z-index: 9999;
             will-change: clip-path;
-            clip-path: var(--ink-clip-start, none);
         }
 
-        /* Disable CSS color transitions while View Transition snapshot is capturing */
+        /* Freeze all element CSS transitions and background keyframe loops during View Transition */
         html.is-theme-transitioning,
         html.is-theme-transitioning *,
         html.is-theme-transitioning *::before,
         html.is-theme-transitioning *::after {
             transition: none !important;
+            animation-play-state: paused !important;
         }
 
         /* Fallback Organic Ink Canvas for browsers without View Transitions API */
@@ -194,7 +194,6 @@
             color: var(--text-primary);
             line-height: 1.6;
             overflow-x: hidden;
-            transition: background-color 0.4s ease, color 0.4s ease;
             -webkit-font-smoothing: antialiased;
         }
 
@@ -251,7 +250,6 @@
             right: -150px;
             z-index: -1;
             pointer-events: none;
-            transition: background 0.5s ease;
             will-change: transform;
             transform: translateZ(0);
         }
@@ -3391,7 +3389,9 @@
         }, 4200);
 
         // 3. Live Real-Time Clock (WIB / UTC+7)
+        let isThemeAnimating = false;
         function updateClock() {
+            if (isThemeAnimating) return;
             const el = document.getElementById('liveClock');
             if (!el) return;
             const now = new Date();
@@ -3407,7 +3407,6 @@
         const inkCanvas = document.getElementById('ink-transition-canvas');
         const savedTheme = localStorage.getItem('az_v3_theme') || 'dark';
         const savedAccent = localStorage.getItem('az_v3_accent') || 'lime';
-        let isThemeAnimating = false;
         let inkSeedCounter = 11;
 
         function applyTheme(theme) {
@@ -3421,10 +3420,10 @@
         }
         applyTheme(savedTheme);
 
-        // Organic Fluid Ink Engine (720-vertex Ultra-Smooth Spline + 60fps WAAPI + Wet Rim):
-        // Uses 720 pre-cached angular tables (0.5 deg per point — sub-pixel curved contour with
-        // zero straight facets) + domain-warped fluid vorticity + satellite ink droplets.
-        const INK_VERTICES = 720;
+        // Organic Fluid Ink Engine (Single-Segment Compositor Bezier + Zero Main-Thread Layout):
+        // Uses 360 pre-cached rays and a pure 2-keyframe hardware cubic-bezier interpolation so
+        // there are zero intermediate keyframe joints, zero velocity humps, and zero lagging pockets.
+        const INK_VERTICES = 360;
         const INK_THETA = new Float64Array(INK_VERTICES);
         const INK_COS = new Float64Array(INK_VERTICES);
         const INK_SIN = new Float64Array(INK_VERTICES);
@@ -3446,144 +3445,104 @@
             };
         }
 
-        function createInkProfile(seed, originX, originY, vw, vh) {
+        function createInkProfile(seed) {
             const rand = seededRandom(seed * 9973 + 17);
-            const aimAngle = Math.atan2(vh * 0.54 - originY, vw * 0.44 - originX);
 
-            // Quadrant-calibrated multi-scale harmonics so a 90-deg corner sweep displays
-            // 3-4 major surges, 8-10 medium ink fingers, and rounded liquid meniscus beads
-            const octaves1 = [
-                { freq: 4,  amp: 0.95 },
-                { freq: 7,  amp: 1.05 },
-                { freq: 11, amp: 0.88 },
-                { freq: 16, amp: 0.72 },
-                { freq: 23, amp: 0.54 },
-                { freq: 31, amp: 0.36 },
-                { freq: 42, amp: 0.22 },
-                { freq: 54, amp: 0.12 }
+            // Multi-scale organic liquid harmonics around 360 deg
+            const octaves = [
+                { freq: 4,  amp: 0.90 },
+                { freq: 7,  amp: 1.00 },
+                { freq: 11, amp: 0.85 },
+                { freq: 16, amp: 0.65 },
+                { freq: 23, amp: 0.42 },
+                { freq: 31, amp: 0.24 }
             ].map(o => ({
                 ...o,
                 phase: rand() * Math.PI * 2,
-                warpFreq: 3 + Math.floor(rand() * 4),
-                warpAmp: (rand() - 0.5) * 0.16
+                warpFreq: 3 + Math.floor(rand() * 3),
+                warpAmp: (rand() - 0.5) * 0.14
             }));
 
-            // Secondary harmonic layer that blooms progressively as the ink wave advances
-            const octaves2 = [
-                { freq: 9,  amp: 0.80 },
-                { freq: 15, amp: 1.00 },
-                { freq: 22, amp: 0.76 },
-                { freq: 30, amp: 0.54 },
-                { freq: 40, amp: 0.32 }
-            ].map(o => ({
-                ...o,
-                phase: rand() * Math.PI * 2
-            }));
-
-            // 26 rounded organic ink fingers: 14 focused across the viewport fan + 12 full-circle
+            // 24 stratified rounded ink fingers evenly spaced around all 360 deg
+            const tendrilCount = 24;
             const tendrils = [];
-            const fanCount = 14;
-            for (let k = 0; k < fanCount; k++) {
-                const frac = (k + 0.18 + rand() * 0.64) / fanCount - 0.5;
+            for (let k = 0; k < tendrilCount; k++) {
+                const angle = ((k + 0.18 + rand() * 0.64) / tendrilCount) * Math.PI * 2;
                 tendrils.push({
-                    angle: aimAngle + frac * 1.68,
-                    invWidth2: 1 / Math.pow(0.044 + rand() * 0.046, 2),
-                    length: 0.26 + rand() * 0.38,
-                    secondary: 0.10 + rand() * 0.18,
-                    subFreq: 20 + Math.floor(rand() * 16),
-                    subPhase: rand() * Math.PI * 2
-                });
-            }
-            for (let k = 0; k < 12; k++) {
-                tendrils.push({
-                    angle: rand() * Math.PI * 2,
-                    invWidth2: 1 / Math.pow(0.052 + rand() * 0.050, 2),
-                    length: 0.20 + rand() * 0.32,
-                    secondary: 0.08 + rand() * 0.14,
-                    subFreq: 18 + Math.floor(rand() * 14),
+                    angle,
+                    invWidth2: 1 / Math.pow(0.052 + rand() * 0.044, 2),
+                    length: 0.22 + rand() * 0.30,
+                    subFreq: 16 + Math.floor(rand() * 12),
                     subPhase: rand() * Math.PI * 2
                 });
             }
 
-            // Pre-evaluate static non-negative organic finger heights H1[i] and H2[i] for all 720 rays.
-            // Because H1[i] >= 0 and H2[i] >= 0 and their time multipliers grow monotonically,
-            // every vertex is mathematically guaranteed to have dr/dp > 0 (zero wobble or retraction).
-            const raw1 = new Float64Array(INK_VERTICES);
-            const raw2 = new Float64Array(INK_VERTICES);
-            let min1 = Infinity, max1 = -Infinity;
-            let min2 = Infinity, max2 = -Infinity;
+            const raw = new Float64Array(INK_VERTICES);
+            let minV = Infinity, maxV = -Infinity;
 
             for (let i = 0; i < INK_VERTICES; i++) {
                 const theta = INK_THETA[i];
-                let n1 = 0;
-                for (let j = 0; j < octaves1.length; j++) {
-                    const o = octaves1[j];
+                let n = 0;
+                for (let j = 0; j < octaves.length; j++) {
+                    const o = octaves[j];
                     const wTheta = theta + o.warpAmp * Math.sin(o.warpFreq * theta + o.phase);
                     const s = Math.sin(o.freq * wTheta + o.phase);
-                    // Rounded liquid crests (convex lobes, smooth concave bays)
-                    n1 += o.amp * (s + 0.22 * s * Math.abs(s));
+                    n += o.amp * (s + 0.22 * s * Math.abs(s));
                 }
 
-                let n2 = 0;
-                for (let j = 0; j < octaves2.length; j++) {
-                    const o = octaves2[j];
-                    n2 += o.amp * Math.sin(o.freq * theta + o.phase);
-                }
-
-                let td1 = 0;
-                let td2 = 0;
-                for (let k = 0; k < tendrils.length; k++) {
+                let tdSum = 0;
+                for (let k = 0; k < tendrilCount; k++) {
                     const td = tendrils[k];
                     let d = Math.abs(theta - td.angle);
                     if (d > Math.PI) d = Math.PI * 2 - d;
                     const g = Math.exp(-(d * d) * td.invWidth2);
-                    const bead = 1 + 0.18 * Math.sin(td.subFreq * theta + td.subPhase);
-                    td1 += td.length * g * bead;
-                    td2 += td.secondary * g * (1 + 0.25 * Math.cos(td.subFreq * theta + td.subPhase));
+                    const bead = 1 + 0.16 * Math.sin(td.subFreq * theta + td.subPhase);
+                    tdSum += td.length * g * bead;
                 }
 
-                const v1 = n1 * 0.11 + td1;
-                const v2 = n2 * 0.08 + td2;
-                raw1[i] = v1;
-                raw2[i] = v2;
-                if (v1 < min1) min1 = v1;
-                if (v1 > max1) max1 = v1;
-                if (v2 < min2) min2 = v2;
-                if (v2 > max2) max2 = v2;
+                const v = n * 0.12 + tdSum;
+                raw[i] = v;
+                if (v < minV) minV = v;
+                if (v > maxV) maxV = v;
             }
 
-            // Circular 5-point Gaussian smoothing pass so high-frequency beads are 100% silky
-            const h1 = new Float64Array(INK_VERTICES);
-            const h2 = new Float64Array(INK_VERTICES);
-            const span1 = Math.max(1e-5, max1 - min1);
-            const span2 = Math.max(1e-5, max2 - min2);
-            const k0 = 0.30, k1 = 0.22, k2 = 0.13;
+            // 5-point circular Gaussian smoothing so every finger tip and bay is smoothly curved
+            const baseShape = new Float64Array(INK_VERTICES);
+            const wallLead = new Float64Array(INK_VERTICES);
+            const span = Math.max(1e-5, maxV - minV);
+            const k0 = 0.32, k1 = 0.22, k2 = 0.12;
 
             for (let i = 0; i < INK_VERTICES; i++) {
                 const im2 = (i - 2 + INK_VERTICES) % INK_VERTICES;
                 const im1 = (i - 1 + INK_VERTICES) % INK_VERTICES;
                 const ip1 = (i + 1) % INK_VERTICES;
                 const ip2 = (i + 2) % INK_VERTICES;
+                const smoothed = k0 * raw[i] + k1 * (raw[im1] + raw[ip1]) + k2 * (raw[im2] + raw[ip2]);
+                const norm = Math.max(0, Math.min(1, (smoothed - minV) / span));
 
-                const s1 = k0 * raw1[i] + k1 * (raw1[im1] + raw1[ip1]) + k2 * (raw1[im2] + raw1[ip2]);
-                const s2 = k0 * raw2[i] + k1 * (raw2[im1] + raw2[ip1]) + k2 * (raw2[im2] + raw2[ip2]);
+                // Normalized to [-0.42, +0.58] around the advancing wave front
+                baseShape[i] = Math.pow(norm, 1.06) - 0.42;
 
-                // Normalize into [0, 0.52] and [0, 0.22] so valleys are 0 and fingers project +74% ahead
-                const norm1 = Math.max(0, Math.min(1, (s1 - min1) / span1));
-                const norm2 = Math.max(0, Math.min(1, (s2 - min2) / span2));
-                h1[i] = Math.pow(norm1, 1.12) * 0.52;
-                h2[i] = Math.pow(norm2, 1.25) * 0.22;
+                // Smooth downward-right & top-left wall advance so edges clear cleanly with zero corner pockets
+                const c = INK_COS[i];
+                const s = INK_SIN[i];
+                const rightWall = (s > 0 && c > -0.45) ? Math.pow(s, 1.4) * Math.max(0, c + 0.45) : 0;
+                const topWall = (c < 0 && s < 0.45 && s > -0.45) ? Math.pow(-c, 1.4) * Math.max(0, 0.45 - Math.abs(s)) : 0;
+                wallLead[i] = rightWall * 0.85 + topWall * 0.45;
             }
 
-            return { h1, h2 };
+            return { baseShape, wallLead };
         }
 
-        // Evaluates strictly monotonic, C-infinity smooth ink boundary into pre-allocated (xs, ys)
-        function evaluateInkContour(profile, cx, cy, valleyRadius, bloom1, bloom2, xs, ys) {
-            const h1 = profile.h1;
-            const h2 = profile.h2;
+        // Evaluates unified-velocity physical ink contour:
+        // r_i = baseRadius + waveAmp * baseShape[i] + wallOffset * wallLead[i]
+        // Because baseRadius is strictly collinear across keyframes, every finger and bay glides
+        // across the viewport at the exact same unified speed with zero intermediate velocity humps.
+        function evaluateInkContour(profile, cx, cy, baseRadius, waveAmp, xs, ys) {
+            const baseShape = profile.baseShape;
+            const wallLead = profile.wallLead;
             for (let i = 0; i < INK_VERTICES; i++) {
-                const r = valleyRadius * (1 + h1[i] * bloom1 + h2[i] * bloom2);
+                const r = Math.max(0.5, baseRadius + waveAmp * (baseShape[i] + wallLead[i]));
                 xs[i] = cx + INK_COS[i] * r;
                 ys[i] = cy + INK_SIN[i] * r;
             }
@@ -3591,7 +3550,7 @@
 
         // Traces a closed Catmull-Rom spline on canvas for non-ViewTransition fallback
         function traceSmoothSplinePath(ctx, xs, ys, count) {
-            const step = 4;
+            const step = 2;
             const tension = 1 / 6;
             ctx.beginPath();
             ctx.moveTo(xs[0], ys[0]);
@@ -3615,7 +3574,6 @@
             ctx.closePath();
         }
 
-        // Builds a 720-vertex polygon string (0.5 deg spacing = sub-pixel curved contour)
         function buildDensePolygonString(xs, ys) {
             const coords = new Array(INK_VERTICES);
             for (let i = 0; i < INK_VERTICES; i++) {
@@ -3624,30 +3582,16 @@
             return `polygon(${coords.join(',')})`;
         }
 
-        // Computes strictly monotonic C2 fluid kinematics across the full viewport traversal
-        function computeFluidKinematics(p, maxRadius) {
-            const endValleyRadius = maxRadius * 1.03;
-            // Balanced S-curve + steady glide so the ink wave crosses the center at ~500ms
-            // and never rushes or stalls
-            const smooth5 = p * p * p * (p * (p * 6 - 15) + 10);
-            const glide = Math.pow(p, 0.90);
-            const baseEase = 0.36 * smooth5 + 0.64 * glide;
-            const valleyRadius = Math.max(0.4, baseEase * endValleyRadius);
-            // Both bloom terms grow monotonically (derivative >= 0 everywhere -> zero retraction)
-            const halfSin = Math.sin(p * Math.PI * 0.5);
-            const bloom1 = 0.72 + 0.28 * halfSin;
-            const bloom2 = halfSin;
-            return { valleyRadius, bloom1, bloom2 };
-        }
-
-        // High-craft 60fps Compositor-Driven Liquid Ink Animator
+        // High-craft 60/120fps Compositor-Driven Liquid Ink Animator
         function runFluidInkTransition(nextTheme, originX, originY, maxRadius) {
             const vw = window.innerWidth;
             const vh = window.innerHeight;
             const dpr = Math.min(window.devicePixelRatio || 1, 2);
-            const profile = createInkProfile(inkSeedCounter, originX, originY, vw, vh);
+            const profile = createInkProfile(inkSeedCounter);
             const xs = new Float64Array(INK_VERTICES);
             const ys = new Float64Array(INK_VERTICES);
+            const maxWaveAmp = Math.min(285, maxRadius * 0.18);
+            const endRadius = maxRadius * 1.04 + maxWaveAmp * 0.45;
 
             if (!document.startViewTransition) {
                 let ctx = null;
@@ -3660,16 +3604,17 @@
                     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
                 }
                 const inkColor = nextTheme === 'light' ? '#F5F3EE' : '#08090C';
-                const duration = 1040;
+                const duration = 960;
                 const start = performance.now();
                 let swapped = false;
 
                 function fallbackStep(now) {
                     const p = Math.min(1, (now - start) / duration);
-                    const kin = computeFluidKinematics(p, maxRadius);
+                    const eased = 1 - Math.pow(1 - p, 1.55);
+                    const bloom = Math.min(1, eased / 0.22);
                     if (ctx) {
                         ctx.clearRect(0, 0, vw, vh);
-                        evaluateInkContour(profile, originX, originY, kin.valleyRadius, kin.bloom1, kin.bloom2, xs, ys);
+                        evaluateInkContour(profile, originX, originY, Math.max(0.8, eased * endRadius), maxWaveAmp * bloom, xs, ys);
                         ctx.fillStyle = inkColor;
                         traceSmoothSplinePath(ctx, xs, ys, INK_VERTICES);
                         ctx.fill();
@@ -3702,24 +3647,26 @@
                 return;
             }
 
-            // Precompute 37 strictly monotonic keyframes with 720 vertices each (~0.9ms total CPU time)
-            // Zero main-thread work runs during the View Transition -> pure 60fps GPU compositor interpolation
-            const totalSteps = 36;
-            const keyframes = new Array(totalSteps + 1);
-            for (let s = 0; s <= totalSteps; s++) {
-                const p = s / totalSteps;
-                const kin = computeFluidKinematics(p, maxRadius);
-                evaluateInkContour(profile, originX, originY, kin.valleyRadius, kin.bloom1, kin.bloom2, xs, ys);
-                keyframes[s] = {
-                    offset: Number(p.toFixed(4)),
-                    clipPath: buildDensePolygonString(xs, ys)
-                };
-            }
+            // 3 Collinear Keyframes:
+            // baseRadius slope is 1.000 on [0, 0.20] and 1.000 on [0.20, 1.0] (100% C-infinity collinear),
+            // while waveAmp blooms to 285px in the first 20% and glides at constant depth across the screen.
+            evaluateInkContour(profile, originX, originY, 1.0, 1.2, xs, ys);
+            const clip0 = buildDensePolygonString(xs, ys);
 
-            htmlEl.style.setProperty('--ink-clip-start', keyframes[0].clipPath);
-            htmlEl.classList.add('is-theme-transitioning');
+            evaluateInkContour(profile, originX, originY, endRadius * 0.20, maxWaveAmp, xs, ys);
+            const clip1 = buildDensePolygonString(xs, ys);
+
+            evaluateInkContour(profile, originX, originY, endRadius, maxWaveAmp * 0.92, xs, ys);
+            const clip2 = buildDensePolygonString(xs, ys);
+
+            const keyframes = [
+                { offset: 0, clipPath: clip0 },
+                { offset: 0.20, clipPath: clip1 },
+                { offset: 1, clipPath: clip2 }
+            ];
 
             let transition;
+            htmlEl.classList.add('is-theme-transitioning');
             try {
                 transition = document.startViewTransition(() => {
                     applyTheme(nextTheme);
@@ -3727,26 +3674,26 @@
             } catch (err) {
                 applyTheme(nextTheme);
                 htmlEl.classList.remove('is-theme-transitioning');
-                htmlEl.style.removeProperty('--ink-clip-start');
                 isThemeAnimating = false;
                 return;
             }
 
-            const duration = 1060;
+            // Steady Fluid Cruise curve: avoids sudden braking while the wave is still on screen
+            const duration = 880;
             transition.ready.then(() => {
                 htmlEl.animate(keyframes, {
                     duration,
-                    easing: 'linear',
+                    easing: 'cubic-bezier(0.22, 0.16, 0.72, 0.92)',
                     fill: 'both',
                     pseudoElement: '::view-transition-new(root)'
                 });
             }).catch(() => {
+                htmlEl.classList.remove('is-theme-transitioning');
                 isThemeAnimating = false;
             });
 
             transition.finished.finally(() => {
                 htmlEl.classList.remove('is-theme-transitioning');
-                htmlEl.style.removeProperty('--ink-clip-start');
                 isThemeAnimating = false;
             });
         }
@@ -3845,6 +3792,10 @@
         let rIdx = 0, cIdx = roles[0].length, deleting = true;
         function typeLoop() {
             if (!typingEl) return;
+            if (isThemeAnimating) {
+                setTimeout(typeLoop, 120);
+                return;
+            }
             const word = roles[rIdx];
             typingEl.textContent = word.substring(0, cIdx);
 
