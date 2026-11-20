@@ -1,7 +1,7 @@
 {
     "board": "My Typography",
     "board_url": "https://www.pinterest.com/Zernevaa/my-typography/",
-    "updated_at": "2026-11-19T05:34:55+00:00",
+    "updated_at": "2026-11-20T05:23:25+00:00",
     "items": [
         {
             "id": "e1_AfqPShx3pMBtMoqaRn-fGXnCoUxhCOAiMzeac07Ypc8i0963HVs0",
@@ -38,6 +38,15 @@
             "permalink": "https://www.pinterest.com/pin/e1_AfqPShxNZl4zDGFvk1Xaa4dcFbpIOweLnbkTXH0_GHeRNXPaS0gp/",
             "pubDate": "Sat, 03 Oct 2026 04:49:27 GMT",
             "timestamp": 1791002967
+        },
+        {
+            "id": "e1_AfqPShxD4NGgK3e6C1Yf-3q_Ru_9vxTQMsqNweaV-3M5p_N_vtl1",
+            "title": "Typography Visual Exploration",
+            "caption": "Koleksi eksplorasi tipografi dan komposisi visual oleh Muhammad Azzam (Zerneva) di board My Typography.",
+            "image_url": "https://i.pinimg.com/736x/06/d8/0e/06d80ee4bfe27e8de85120625c9dcc32.jpg",
+            "permalink": "https://www.pinterest.com/pin/e1_AfqPShxD4NGgK3e6C1Yf-3q_Ru_9vxTQMsqNweaV-3M5p_N_vtl1/",
+            "pubDate": "Tue, 12 May 2026 13:11:40 GMT",
+            "timestamp": 1778591500
         },
         {
             "id": "e1_AfqPShzR2IgQTzKQK8W4rTjBOua5CNUwVU4wBunoJ4qqi8jLvQL8",
@@ -101,15 +110,6 @@
             "permalink": "https://www.pinterest.com/pin/e1_AfqPShwqcuA_6HlC5G4NOB51e7C6qtlGxMmJIZweftQkk88jUJr0/",
             "pubDate": "Fri, 05 May 2023 00:05:56 GMT",
             "timestamp": 1683245156
-        },
-        {
-            "id": "e1_AfqPShxzDdCiDv_TAiBq1eJV83sMoUG3DdbjR9cGV1BvgB8aI-iQ",
-            "title": "Typography Visual Exploration",
-            "caption": "Koleksi eksplorasi tipografi dan komposisi visual oleh Muhammad Azzam (Zerneva) di board My Typography.",
-            "image_url": "https://i.pinimg.com/736x/f3/6b/c1/f36bc1a1c69c462c22603982d1aa346d.jpg",
-            "permalink": "https://www.pinterest.com/pin/e1_AfqPShxzDdCiDv_TAiBq1eJV83sMoUG3DdbjR9cGV1BvgB8aI-iQ/",
-            "pubDate": "Tue, 18 Apr 2023 09:27:35 GMT",
-            "timestamp": 1681810055
         }
     ]
 }
